@@ -135,8 +135,8 @@ JHTML::_('behavior.tooltip');
                     }
                     ?>
                 </td>
-                <td align="center"><?=JHTML::_('grid.access',   $row, $i, $row->status );?></td>
-                <td><?=$author; ?></td>
+                <td align="center"><?php echo JHTML::_('grid.access',   $row, $i, $row->status );?></td>
+                <td><?php echo $author; ?></td>
                 <td nowrap="nowrap">
                     <?php echo JHTML::_('date',  $row->created, JText::_('DATE_FORMAT_LC4') ); ?>
                 </td>

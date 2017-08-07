@@ -142,7 +142,7 @@ JHTML::_('behavior.tooltip');
 
             ?>
             <tr class="<?php echo "row$k"; ?>">
-                <td><?=$page->getRowOffset( $i ); ?></td>
+                <td><?php echo $page->getRowOffset( $i ); ?></td>
                 <td align="center"><?=JHTML::_('grid.checkedout',   $row, $i );?></td>
                 <td>
                     <?php
