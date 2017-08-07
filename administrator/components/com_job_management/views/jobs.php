@@ -81,7 +81,7 @@ JHTML::_('behavior.tooltip');
         {
             $row = &$rows[$i];
 
-            $link 	= 'index.php?option=com_content&sectionid='. $redirect .'&task=edit&cid[]='. $row->id;
+            $link 	= 'index.php?option=com_job_management&task=edit&cid[]='. $row->id;
 
             $row->sect_link = JRoute::_( 'index.php?option=com_sections&task=edit&cid[]='. $row->sectionid );
             $row->cat_link 	= JRoute::_( 'index.php?option=com_categories&task=edit&cid[]='. $row->catid );

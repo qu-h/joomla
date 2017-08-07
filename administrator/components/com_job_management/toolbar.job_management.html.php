@@ -31,7 +31,7 @@ class TOOLBAR_JobManagement
 		if ( $edit ) {
 			JToolBarHelper::cancel( $item."cancel", 'Close' );
 		} else {
-			JToolBarHelper::cancel($item);
+			JToolBarHelper::cancel($item."cancel");
 		}
 	}
 
