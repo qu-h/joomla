@@ -17,7 +17,13 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 /*
  * Joomla! system checks
  */
-
+if( !function_exists('bug') ){
+    function bug($var=null){
+        echo '<pre>';
+        print_r($var);
+        echo "</pre>\n";
+    }
+}
 @set_magic_quotes_runtime( 0 );
 @ini_set('zend.ze1_compatibility_mode', '0');
 

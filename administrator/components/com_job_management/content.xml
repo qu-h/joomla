@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install type="component" version="1.0.0">
+	<name>Quản lý công việc</name>
+	<author>QuanICT</author>
+	<creationDate>August 2017</creationDate>
+	<copyright>
+		Copyright (C) 2005 - 2010 Open Source Matters. All rights reserved.
+	</copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<authorEmail>hongquan2712@gmail.com</authorEmail>
+	<authorUrl>giaiphapict.com</authorUrl>
+	<version>1.0.0</version>
+	<description>Quản lý công việc và phòng ban</description>
+</install>
