@@ -35,15 +35,19 @@ class JHTMLJobMg extends  JHTML{
 
     function AuthorSelect($inputname="filter_authorid",$selected_id=0){
         $query = 'SELECT u.id, u.name' .
-            ' FROM #__users AS c' .
-            ' LEFT JOIN #__users AS u ON u.id = c.created_by' .
+            ' FROM #__users AS u' .
             ' GROUP BY u.id' .
             ' ORDER BY u.name, u.id';
         $authors[] = JHTML::_('select.option', '0', '- '.JText::_('Select Author').' -', 'id', 'name');
         $db	    = & JFactory::getDBO();
         $db->setQuery($query);
+        if (!$db->query())
+        {
+            JError::raiseError( 500, $db->getErrorMsg() );
+            return false;
+        }
         $authors = array_merge($authors, $db->loadObjectList());
-        return JHTML::_('select.genericlist',  $authors, $inputname, 'class="inputbox" size="1" onchange="document.adminForm.submit( );"', 'created_by', 'name', $selected_id);
+        return JHTML::_('select.genericlist',  $authors, $inputname, 'class="inputbox" size="1" onchange="document.adminForm.submit( );"', 'id', 'name', $selected_id);
 
     }
 

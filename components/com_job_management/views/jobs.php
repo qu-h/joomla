@@ -17,19 +17,6 @@ $ordering = ($lists['order'] == 'section_name' || $lists['order'] == 'cc.title' 
 <div class="clearfix"><div class="row">
 <form action="" method="post" name="adminForm">
 
-    <table>
-        <tr>
-
-            <td nowrap="nowrap">
-                <?php
-                echo $lists['groupid'];
-                echo $lists['authorid'];
-
-                ?>
-            </td>
-        </tr>
-    </table>
-
     <table class="table table-hover table-responsive" >
         <thead>
         <tr>
