@@ -28,8 +28,10 @@
             submitform( pressbutton );
             return;
         }
-
-        // do field validation
+        if( pressbutton =="updateformval" ){
+            submitform( pressbutton );
+            return true;
+        }
         var text = <?php echo $editor->getContent( 'content' ); ?>
         if (form.title.value == ""){
             alert( "<?php echo JText::_( 'Phải nhập vào tên công việc', true ); ?>" );
@@ -44,7 +46,9 @@
     }
     //-->
 </script>
-
+<?php
+JHTML::stylesheet("css/bootstrap.min.css","components/com_job_management/assets/");
+?>
 <form action="index.php" method="post" name="adminForm">
 
 
@@ -61,20 +65,24 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label><?php echo JText::_( 'Job Group' ); ?></label>
-                            <?php echo JHTMLJobMg::groupSelect($row->groupid,false,"groupid"); ?>
+                            <?php echo JHTMLJobMg::groupSelect($row->groupid,true,"groupid"); ?>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label><?php echo JText::_( 'Published' ); ?></label>
-                            <?php //echo JHTML::_('select.booleanlist', 'status', '', $row->status); ?>
                             <?php echo JHTMLJobMg::PublishSelelect($row->status,"status"); ?>
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="form-group">
                             <label><?php echo JText::_( 'Select User' ); ?></label>
-                            <?php echo JHTMLJobMg::SelectMultiUsers(NULL,"users",$row->id); ?>
+                            <?php
+                            if( !$_POST || empty($_POST) ){
+                                JRequest::setVar( 'groupid', $row->groupid );
+                            }
+                            echo JHTMLJobMg::SelectMultiUsers(NULL,"users",$row->id,'job');
+                            ?>
                         </div>
                     </div>
                     <div class="col-md-12">

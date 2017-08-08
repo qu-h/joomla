@@ -14,7 +14,7 @@ class TOOLBAR_JobManagement
         $page_title = "Danh sách tất cả công việc";
         $task = JRequest::getCmd('c');
         switch ($task){
-            case "addgroup":
+            case "group":
                 $page_title = "Nhóm Công việc";
                 $item = "group";
                 break;
@@ -82,6 +82,9 @@ class TOOLBAR_JobManagement
         }
 		JToolBarHelper::title( JText::_( $page_title ), $icon );
         JToolBarHelper::addNewX();
+        if( $task=="job" ){
+            JToolBarHelper::custom( 'jobclose', 'default.png', 'archive_f2.png', 'Đóng', false );
+        }
         JToolBarHelper::trash();
 	}
 }

@@ -66,28 +66,57 @@ class JHTMLJobMg extends  JHTML{
         if( is_null($name) ){
             $name = "groupid";
         }
-        $javascript = $submit ? 'onchange="document.adminForm.submit();"' : NULL;
+        $javascript = $submit ? 'onchange="javascript: submitbutton(\'updateformval\');"' : NULL;
         return JHTML::_('select.genericlist',  $groups, $name, 'class="form-control custom-select" size="1" '.$javascript, 'id', 'title', intval($selected_id));
     }
 
-    function SelectMultiUsers($selected=array(),$name="uid",$job_id=0){
+    function SelectMultiUsers($selected=array(),$name="uid",$link_id=0,$object="job"){
+        $db	    = & JFactory::getDBO();
+        $groupid				= JRequest::getVar( 'groupid', 0, '', 'int' );
+        $control			= JRequest::getCmd( 'c', 'job' );
+        $option			= JRequest::getCmd( 'option', 'com_job_management' );
+        $ids = NULL;
+
+        if( $control =="job" && $object == "job" && $option=="com_job_management" ){
+            $ids = array();
+            $group_uid_query = "SELECT uid FROM #__jobmanagement_group_user WHERE group_id = $groupid";
+            $db->setQuery($group_uid_query);
+            if (!$db->query())
+            {
+                JError::raiseError( 500, $db->getErrorMsg() );
+                return false;
+            }
+            $group_uids = $db->loadObjectList();
+
+            if( !empty($group_uids) ) foreach ($group_uids AS $u){
+                $ids[] = $u->uid;
+            }
+            if( empty($ids) ){
+                $ids[] = 0;
+            }
+        }
+
         $query = 'SELECT u.name, u.username, u.id AS uid, g.name AS groupname' .
             ' FROM #__users AS u'
-
             . ' INNER JOIN #__core_acl_aro AS aro ON aro.value = u.id'
             . ' INNER JOIN #__core_acl_groups_aro_map AS gm ON gm.aro_id = aro.id'
-            . ' INNER JOIN #__core_acl_aro_groups AS g ON g.id = gm.group_id'
-            .' GROUP BY u.id'
-            .' ORDER BY u.name, u.id';
-        $db	    = & JFactory::getDBO();
+            . ' INNER JOIN #__core_acl_aro_groups AS g ON g.id = gm.group_id';
+        if( !empty($ids) ) {
+            $query .= " WHERE u.id IN (".implode(",", $ids).")";
+        }
+        $query .= " GROUP BY u.id ORDER BY u.name, u.id";
         $db->setQuery($query);
         $users = $db->loadObjectList();
 
-        if( empty($selected) && $job_id > 0){
+        if( empty($selected) && $link_id > 0){
             $selected = array();
-            $get_uids_query = "SELECT uid FROM #__jobmanagement_job_user WHERE job_id = $job_id";
+            $get_uids_query = "SELECT uid FROM #__jobmanagement_".$object."_user WHERE ".$object."_id = $link_id";
             $db->setQuery($get_uids_query);
-
+            if (!$db->query())
+            {
+                JError::raiseError( 500, $db->getErrorMsg() );
+                return false;
+            }
             $uids = $db->loadObjectList();
 
             if( !empty($uids) ) foreach ($uids AS $u){
@@ -106,6 +135,26 @@ class JHTMLJobMg extends  JHTML{
             $db	    = & JFactory::getDBO();
             $db->setQuery($get_uids_query);
 
+            if (!$db->query())
+            {
+                JError::raiseError( 500, $db->getErrorMsg() );
+                return false;
+            }
+            $count = count($db->loadObjectList());
+        }
+        return $count;
+    }
+    function UidGroupCount(&$row){
+        $count = 0;
+        if( $row->id > 0 ){
+            $get_uids_query = "SELECT uid FROM #__jobmanagement_group_user WHERE group_id = ".$row->id;
+            $db	    = & JFactory::getDBO();
+            $db->setQuery($get_uids_query);
+            if (!$db->query())
+            {
+                JError::raiseError( 500, $db->getErrorMsg() );
+                return false;
+            }
             $count = count($db->loadObjectList());
         }
         return $count;
@@ -173,5 +222,48 @@ class JHTMLJobMg extends  JHTML{
         }
 
         return $txt;
+    }
+
+    function JobStatus( &$row, $i ,$prefix='')
+    {
+        switch ($row->status){
+            case 1:
+                $img = "tick.png";
+                $task = "unpublish";
+                $alt = JText::_( 'Published' );
+                $action = JText::_( 'Unpublish Item' );
+                break;
+            case 0:
+                $img = "publish_x.png";
+                $task = "publish";
+                $alt = JText::_( 'Unpublished' );
+                $action = JText::_( 'Publish Item' );
+                break;
+            case -1:
+                $img = "checked_out.png";
+                $task = "";
+                $alt = JText::_( 'Đã đóng' );
+                $action = JText::_( 'Đã đóng' );
+                break;
+            default:
+                $img = "checked_out.png";
+                $task = null;
+                $alt = null;
+                $action = null;
+                break;
+        }
+
+
+        if( strlen($action) < 1  ){
+            return NULL;
+        }
+        $html = '<a href="javascript:void(0);" title="'. $action .'" ';
+        if( strlen($task) > 0 ){
+            $html .= ' onclick="return listItemTask(\'cb'. $i .'\',\''. $prefix.$task .'\')" ';
+        }
+        $html .= ' >';
+        $html .= '<img src="images/'. $img .'" border="0" alt="'. $alt .'" />';
+        $html .= '</a>';
+        return $html;
     }
 }

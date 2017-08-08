@@ -41,18 +41,23 @@ JHTML::_('behavior.tooltip');
             <th width="5">
                 <?php echo JText::_( 'Num' ); ?>
             </th>
-            <th width="5">
+            <th width="5" align="left">
                 <input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count( $rows ); ?>);" />
             </th>
             <th class="title">
                 <?php echo JHTML::_('grid.sort',   'Title', 'c.title', @$lists['order_Dir'], @$lists['order'] ); ?>
             </th>
-
+            <th class="text-center" width="5%">
+                <?php echo JText::_( 'User' ); ?>
+            </th>
             <th  class="title" width="8%" nowrap="nowrap">
                 <?php echo JHTML::_('grid.sort',   'Author', 'author', @$lists['order_Dir'], @$lists['order'] ); ?>
             </th>
             <th align="center" width="10">
                 <?php echo JHTML::_('grid.sort',   'Date', 'c.created', @$lists['order_Dir'], @$lists['order'] ); ?>
+            </th>
+            <th width="3%">
+                <?php echo JHTML::_('grid.sort',   'Trạng Thái', 'g.status', @$lists['order_Dir'], @$lists['order'] ); ?>
             </th>
         </tr>
         </thead>
@@ -74,6 +79,7 @@ JHTML::_('behavior.tooltip');
             $link 	= 'index.php?option=com_job_management&c=group&task=edit&cid[]='. $row->id;
 
             $checked 	= JHTML::_('grid.checkedout',   $row, $i );
+            $row->published = $row->status ==1;
             ?>
             <tr class="<?php echo "row$k"; ?>">
                 <td>
@@ -97,10 +103,17 @@ JHTML::_('behavior.tooltip');
                     }
                     ?>
                 </td>
+                <td class="text-center" >
+                    <span class="count_uid ">
+                        <img src="images/users.png">
+                        <i><?php echo JHTML::_('jobMg.UidGroupCount',   $row)?></i>
+                    </span>
+                </td>
                 <td> <?php echo JHTML::_('jobMg.author',   $row)?></td>
                 <td nowrap="nowrap">
                     <?php echo JHTML::_('date',  $row->created, JText::_('DATE_FORMAT_LC4') ); ?>
                 </td>
+                <td align="center"><?php echo JHTML::_('grid.published',   $row,$i) ?></td>
 
             </tr>
             <?php

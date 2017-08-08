@@ -225,28 +225,7 @@ class JobMgControllerJob extends JController
             JError::raiseError( 500, $db->stderr() );
             return false;
         }
-
-        $query = 'DELETE FROM #__jobmanagement_job_user WHERE job_id ='. $row->id. '';
-        $db->setQuery($query);
-        if (!$db->query())
-        {
-            JError::raiseError( 500, $db->getErrorMsg() );
-            return false;
-        }
-
-        $userSelect = JRequest::getVar( 'users', array(), 'post', 'array' );
-
-        if( !empty($userSelect) ){
-            foreach ($userSelect AS $u){
-                $add_uid_query = "INSERT INTO `#__jobmanagement_job_user` (`id`, `job_id`, `uid`) VALUES (0, ". $row->id. ",$u)";
-                $db->setQuery($add_uid_query);
-                if (!$db->query())
-                {
-                    JError::raiseError( 500, $db->getErrorMsg() );
-                    return false;
-                }
-            }
-        }
+        JHTMLJobManagement::update_users_link("job",$row->id);
 
         $dispatcher->trigger('onAfterContentSave', array(&$row, $isNew));
 
@@ -269,7 +248,7 @@ class JobMgControllerJob extends JController
     {
         global $mainframe;
 
-        JHTML::stylesheet("css/bootstrap.min.css","components/com_job_management/assets/");
+
         // Initialize variables
         $db				= & JFactory::getDBO();
         $user			= & JFactory::getUser();
@@ -289,7 +268,7 @@ class JobMgControllerJob extends JController
 
         if ($id) {
             if ($row->status < 0) {
-                $mainframe->redirect('index.php?option='.$this->com, JText::_('You cannot edit an archived item'));
+                $mainframe->redirect('index.php?option=com_job_management&c=job', JText::_('Công việc đã đóng không thể sửa'));
             }
         }
 
@@ -366,6 +345,46 @@ class JobMgControllerJob extends JController
         include_once JPATH_COMPONENT.DS.'views/job.php';
     }
 
+    function updateformval(){
+        $id				= JRequest::getVar( 'id', 0, '', 'int' );
+        $option			= JRequest::getCmd( 'option' );
+        $db		= & JFactory::getDBO();
+
+        $row = & JTable::getInstance('JobManagementJob');
+
+        if (!$row->bind(JRequest::get('post'))) {
+            JError::raiseError( 500, $db->stderr() );
+            return false;
+        }
+        $row->id = (int) $row->id;
+
+        $details		= JRequest::getVar( 'detail', null, 'post', 'array' );
+        $form = new JParameter('', JPATH_COMPONENT.DS.'models'.DS.'job.xml');
+        if (is_array($details))
+        {
+            $txt = array ();
+            foreach ($details as $k => $v) {
+                if( property_exists($row,$k) ){
+                    $row->$k = $v;
+                } else {
+                    $txt[] = "$k=$v";
+                }
+                $form->set($k, $v);
+            }
+
+        }
+
+        jimport('joomla.html.pane');
+        JFilterOutput::objectHTMLSafe( $row );
+
+        //$db		= &JFactory::getDBO();
+        $editor = &JFactory::getEditor();
+        $pane	= &JPane::getInstance('sliders', array('allowAllClose' => true));
+
+        JHTML::_('behavior.tooltip');
+        include_once JPATH_COMPONENT.DS.'views/job.php';
+    }
+
     function view()
     {
         global $mainframe;
@@ -396,6 +415,14 @@ class JobMgControllerJob extends JController
             }
         }
 
+        $updateview_query = 'UPDATE #__jobmanagement_job SET viewed = 1 WHERE id='.$row->id;
+        $db->setQuery($updateview_query);
+        if (!$db->query())
+        {
+            JError::raiseError( 500, $db->getErrorMsg() );
+            return false;
+        }
+        
         include_once JPATH_COMPONENT.DS.'views/job_view.php';
 
         $id = $row->id;
@@ -465,4 +492,60 @@ class JobMgControllerJob extends JController
         $mainframe->redirect('index.php?option=com_job_management&c=job');
     }
 
+    function jobclose(){
+        global $mainframe;
+        $cid		= JRequest::getVar( 'cid', array(), 'post', 'array' );
+        if (count($cid) < 1) {
+            $msg =  JText::_('Phải chọn công việc để đóng');
+            $mainframe->redirect('index.php?option=com_job_management', $msg, 'error');
+        }
+        $this->update_status(-1);
+    }
+
+    function publish(){
+
+        global $mainframe;
+        $cid		= JRequest::getVar( 'cid', array(), 'post', 'array' );
+        if (count($cid) < 1) {
+            $msg =  JText::_('Phải chọn công việc để thực hiện');
+            $mainframe->redirect('index.php?option=com_job_management', $msg, 'error');
+        }
+        $task = JRequest::getCmd('task');
+        $status = $task == "unpublish" ? 0 : 1;
+        $this->update_status($status);
+    }
+
+
+    private function update_status($status=1){
+        global $mainframe;
+
+        JRequest::checkToken() or jexit( 'Invalid Token' );
+
+        $db			= & JFactory::getDBO();
+        $cid		= JRequest::getVar( 'cid', array(), 'post', 'array' );
+        $option		= JRequest::getCmd( 'option' );
+        $return		= JRequest::getCmd( 'returntask', '', 'post' );
+
+        JArrayHelper::toInteger($cid);
+
+        // Removed content gets put in the trash [state = -2] and ordering is always set to 0
+        $state		= $status;
+        $cids = implode(',', $cid);
+
+        $query = 'UPDATE #__jobmanagement_job' .
+            ' SET status = '.(int) $state .
+            ' WHERE id IN ( '. $cids. ' )';
+        $db->setQuery($query);
+        if (!$db->query())
+        {
+            JError::raiseError( 500, $db->getErrorMsg() );
+            return false;
+        }
+
+        $cache = & JFactory::getCache('com_content');
+        $cache->clean();
+
+        $msg = JText::sprintf('Thay đổi trạng thái công việc thành công', count($cid));
+        $mainframe->redirect('index.php?option='.$option.'&c=job&task'.$return, $msg);
+    }
 }

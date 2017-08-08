@@ -1,9 +1,6 @@
 <?php
 class JHTMLJobManagement
 {
-	/**
-	 * Displays the publishing state legend for articles
-	 */
 	function Legend( )
 	{
 		?>
@@ -49,5 +46,30 @@ class JHTMLJobManagement
 		<?php
 	}
 
+	static function update_users_link($object="job",$link_id=0){
+        $db		= & JFactory::getDBO();
+
+        $query = "DELETE FROM #__jobmanagement_".$object."_user WHERE ".$object."_id =". $link_id;
+        $db->setQuery($query);
+        if (!$db->query())
+        {
+            JError::raiseError( 500, $db->getErrorMsg() );
+            return false;
+        }
+
+        $userSelect = JRequest::getVar( 'users', array(), 'post', 'array' );
+
+        if( !empty($userSelect) ){
+            foreach ($userSelect AS $u){
+                $add_uid_query = "INSERT INTO `#__jobmanagement_".$object."_user` (`id`, `".$object."_id`, `uid`) VALUES (0, $link_id,$u)";
+                $db->setQuery($add_uid_query);
+                if (!$db->query())
+                {
+                    JError::raiseError( 500, $db->getErrorMsg() );
+                    return false;
+                }
+            }
+        }
+    }
 
 }

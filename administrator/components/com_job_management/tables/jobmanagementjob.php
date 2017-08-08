@@ -16,6 +16,7 @@ class JTableJobManagementJob extends JTable
     var $date_start = "";
     var $date_end = "";
     var $status = 1;
+    var $viewed = 0;
 
     var $version = 0;
 

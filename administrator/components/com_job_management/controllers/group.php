@@ -314,7 +314,7 @@ class JobMgControllerGroup extends JController
             JError::raiseError( 500, $db->stderr() );
             return false;
         }
-
+        JHTMLJobManagement::update_users_link("group",$row->id);
         $dispatcher->trigger('onAfterContentSave', array(&$row, $isNew));
 
         switch ($task)

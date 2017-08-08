@@ -10,6 +10,7 @@ switch ($task)
     case "addgroup":
 	case 'new_content_typed':
 	case 'new_content_section':
+    case "updateformval":
         TOOLBAR_JobManagement::_EDIT(false);
 		break;
 	case 'edit':

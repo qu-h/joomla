@@ -47,7 +47,8 @@ $ordering = ($lists['order'] == 'section_name' || $lists['order'] == 'cc.title' 
             <th  class="title text-left" >
                 <?php echo JHTML::_('grid.sort',   'Author', 'author', @$lists['order_Dir'], @$lists['order'] ); ?>
             </th>
-
+            <th width="1%" class="title">Quá hạn</th>
+            <th width="1%" class="title">Đã xem</th>
 
         </tr>
         </thead>
@@ -96,6 +97,20 @@ $ordering = ($lists['order'] == 'section_name' || $lists['order'] == 'cc.title' 
 
                 <td><?php echo $row->section_name; ?></td>
                 <td> <?php echo $row->author ;?></td>
+                <td class="userfront">
+                    <?php if( strtotime($row->date_end) < time() && $row->status !=-1 ):?>
+                        <i class="fa fa-ban red "></i>
+                    <?php else : ?>
+                        <i class="fa fa-check"></i>
+                    <?php endif; ?>
+                </td>
+                <td class="userfront">
+                    <?php if( $row->viewed ==1 ):?>
+                        <i class="fa fa-eye"></i>
+                    <?php else : ?>
+                        <i class="fa fa-eye-slash red"></i>
+                    <?php endif; ?>
+                </td>
             </tr>
             <?php
             $k = 1 - $k;

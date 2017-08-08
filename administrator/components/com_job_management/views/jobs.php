@@ -12,6 +12,7 @@ $now	=& JFactory::getDate();
 
 $ordering = ($lists['order'] == 'section_name' || $lists['order'] == 'cc.title' || $lists['order'] == 'c.ordering');
 JHTML::_('behavior.tooltip');
+JHTML::stylesheet("css/font-awesome.min.css","components/com_job_management/assets/");
 
 ?>
 <form action="" method="post" name="adminForm">
@@ -49,7 +50,7 @@ JHTML::_('behavior.tooltip');
             <th style="width: 5%;" class="text-center">
                 <?php echo JText::_( 'Reply' ); ?>
             </th>
-            <th style="width: 5%;" class="text-center">
+            <th class="text-center">
                 <?php echo JText::_( 'User' ); ?>
             </th>
 
@@ -73,6 +74,8 @@ JHTML::_('behavior.tooltip');
             <th width="3%">
                 <?php echo JHTML::_('grid.sort',   'Trạng Thái', 'g.status', @$lists['order_Dir'], @$lists['order'] ); ?>
             </th>
+            <th width="1%" class="title">Quá hạn</th>
+            <th width="1%" class="title">Đã xem</th>
             <th width="1%" class="title">
                 <?php echo JHTML::_('grid.sort',   'ID', 'c.id', @$lists['order_Dir'], @$lists['order'] ); ?>
             </th>
@@ -80,7 +83,7 @@ JHTML::_('behavior.tooltip');
         </thead>
         <tfoot>
         <tr>
-            <td colspan="15">
+            <td colspan="17">
                 <?php echo $page->getListFooter(); ?>
             </td>
         </tr>
@@ -92,6 +95,7 @@ JHTML::_('behavior.tooltip');
         for ($i=0, $n=count( $rows ); $i < $n; $i++)
         {
             $row = &$rows[$i];
+            $row->published = $row->status ==1;
             ?>
             <tr class="<?php echo "row$k"; ?>">
                 <td><?php echo $page->getRowOffset( $i ); ?></td>
@@ -118,7 +122,7 @@ JHTML::_('behavior.tooltip');
                 <td align="center" nowrap="nowrap" class="text-danger" >
                     <?php
                     $date_end= JHTML::_('date',  $row->date_end, JText::_('DATE_FORMAT_LC4') );
-                    if( strtotime($row->date_end) < time()  ){
+                    if( strtotime($row->date_end) < time() && $row->status !=-1 ){
                         echo '<span class="txt-danger">'.$date_end.'</span>';
                     } else {
                         echo $date_end;
@@ -135,7 +139,21 @@ JHTML::_('behavior.tooltip');
                 <td> <?php echo JHTML::_('jobMg.author',   $row)?>
 
                 </td>
-                <td align="center"><?php echo JHTML::_('grid.published',   $row,$i) ?></td>
+                <td align="center"><?php echo JHTMLJobMg::JobStatus($row,$i) ?></td>
+                <td class="userfront">
+                    <?php if( strtotime($row->date_end) < time() && $row->status !=-1 ):?>
+                        <i class="fa fa-ban red "></i>
+                    <?php else : ?>
+                        <i class="fa fa-check"></i>
+                    <?php endif; ?>
+                </td>
+                <td class="userfront">
+                    <?php if( $row->viewed ==1 ):?>
+                        <i class="fa fa-eye"></i>
+                    <?php else : ?>
+                        <i class="fa fa-eye-slash red"></i>
+                    <?php endif; ?>
+                </td>
                 <td>
                     <?php echo $row->id; ?>
                 </td>
