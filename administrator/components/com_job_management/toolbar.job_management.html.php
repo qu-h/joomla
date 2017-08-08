@@ -12,11 +12,14 @@ class TOOLBAR_JobManagement
 		$text = ( $edit ? JText::_( 'Sửa' ) : JText::_( 'Thêm mới' ) );
 
         $page_title = "Danh sách tất cả công việc";
-        $task = JRequest::getCmd('task');
+        $task = JRequest::getCmd('c');
         switch ($task){
             case "addgroup":
                 $page_title = "Nhóm Công việc";
                 $item = "group";
+                break;
+            case "reply":
+                $page_title = "Thảo Luận";
                 break;
             default:
                 $page_title = "Công việc";
@@ -26,12 +29,12 @@ class TOOLBAR_JobManagement
 
 		JToolBarHelper::title( JText::_( $page_title ).': <small><small>[ '. $text.' ]</small></small>', 'addedit.png' );
 
-		JToolBarHelper::save($item."save");
-		JToolBarHelper::apply($item."apply");
+		JToolBarHelper::save();
+		JToolBarHelper::apply();
 		if ( $edit ) {
-			JToolBarHelper::cancel( $item."cancel", 'Close' );
+			JToolBarHelper::cancel( "cancel", 'Close' );
 		} else {
-			JToolBarHelper::cancel($item."cancel");
+			JToolBarHelper::cancel("cancel");
 		}
 	}
 
@@ -52,34 +55,33 @@ class TOOLBAR_JobManagement
 
 	function _DEFAULT()
 	{
-		global $filter_state;
-
+        $controllerName = JRequest::getCmd( 'c', 'job' );
+        if( $controllerName=="reply" ){
+            return self::_EDIT(false);
+        }
 		$page_title = "Danh sách tất cả công việc";
-        $task = JRequest::getCmd('task');
+        $task = JRequest::getCmd('c');
         switch ($task){
             case "group":
                 $page_title = "Danh sách nhóm công việc";
-                $item = "group";
+                $icon = "module";
+                break;
+            case "reply":
+                $page_title = "Thảo Luận";
+                $job_id = (int)JRequest::getCmd('jid');
+
+                if( $job_id > 0  ){
+                    $page_title .= JHTMLJobMg::ReplyJobTitle($job_id);
+                }
+                $icon = "inbox";
                 break;
             default:
                 $page_title = "Danh sách công việc";
-                $item = "";
+                $icon = "article";
                 break;
         }
-		JToolBarHelper::title( JText::_( $page_title ), 'article.png' );
-//		if ($filter_state == 'A' || $filter_state == NULL) {
-//			JToolBarHelper::unarchiveList();
-//		}
-//		if ($filter_state != 'A') {
-//			JToolBarHelper::archiveList();
-//		}
-		//JToolBarHelper::publishList();
-		//JToolBarHelper::unpublishList();
-		//JToolBarHelper::customX( 'movesect', 'move.png', 'move_f2.png', 'Move' );
-		//JToolBarHelper::customX( 'copy', 'copy.png', 'copy_f2.png', 'Copy' );
-        JToolBarHelper::addNewX($item."add","Thêm mới");
-        JToolBarHelper::trash($item."remove",'Xóa');
-		//JToolBarHelper::preferences('com_content', '550');
-		//JToolBarHelper::help( 'screen.content' );
+		JToolBarHelper::title( JText::_( $page_title ), $icon );
+        JToolBarHelper::addNewX();
+        JToolBarHelper::trash();
 	}
 }

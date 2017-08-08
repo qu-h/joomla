@@ -1,0 +1,50 @@
+.count_uid,
+.count_reply {
+    position: relative;
+    width: 25px;
+    height: 25px;
+    display: block;
+    margin: 0 auto;
+}
+.count_reply img {
+    width: 22px;
+}
+
+.count_uid > i,
+.count_reply > i{
+    position: absolute;
+    right: -4px;
+    top: -4px;
+    border: 1px solid #0B55C4;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    background-color: rgba(11, 85, 196, 0.9);
+    text-align: center;
+    line-height: 20px;
+    color: #fff;
+}
+.count_reply > i {
+    background-color: rgba(41, 196, 9, 0.9);
+}
+
+.font-size-23 {
+    font-size: 23px;
+}
+
+.txt-danger {
+    color: red;
+    font-weight: bold;
+}
+.text-left {
+    text-align: left !important;
+}
+
+.header > .jobtitle {
+    font-size: 80%;
+    margin-left: 15px;
+}
+
+.userfront .fa {
+    font-size: 20px;
+}

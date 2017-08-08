@@ -11,38 +11,29 @@ $config	=& JFactory::getConfig();
 $now	=& JFactory::getDate();
 
 $ordering = ($lists['order'] == 'section_name' || $lists['order'] == 'cc.title' || $lists['order'] == 'c.ordering');
-JHTML::_('behavior.tooltip');
+
 
 ?>
+<div class="clearfix"><div class="row">
 <form action="" method="post" name="adminForm">
 
     <table>
         <tr>
-            <td width="100%">
-                <?php echo JText::_( 'Filter' ); ?>:
-                <input type="text" name="search" id="search" value="<?php echo htmlspecialchars($lists['search']);?>" class="text_area" onchange="document.adminForm.submit();" title="<?php echo JText::_( 'Filter by title or enter article ID' );?>"/>
-                <button onclick="this.form.submit();"><?php echo JText::_( 'Go' ); ?></button>
-                <button onclick="document.getElementById('search').value='';this.form.getElementById('filter_sectionid').value='-1';this.form.getElementById('catid').value='0';this.form.getElementById('filter_authorid').value='0';this.form.getElementById('filter_state').value='';this.form.submit();"><?php echo JText::_( 'Reset' ); ?></button>
-            </td>
+
             <td nowrap="nowrap">
                 <?php
                 echo $lists['groupid'];
                 echo $lists['authorid'];
-                echo $lists['status'];
+
                 ?>
             </td>
         </tr>
     </table>
 
-    <table class="adminlist" cellspacing="1">
+    <table class="table table-hover table-responsive" >
         <thead>
         <tr>
-            <th width="5">
-                <?php echo JText::_( 'Num' ); ?>
-            </th>
-            <th width="5">
-                <input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count( $rows ); ?>);" />
-            </th>
+
             <th class="text-left">
                 <?php echo JHTML::_('grid.sort',   'Tên Công Việc', 'g.title', @$lists['order_Dir'], @$lists['order'] ); ?>
             </th>
@@ -70,21 +61,10 @@ JHTML::_('behavior.tooltip');
                 <?php echo JHTML::_('grid.sort',   'Author', 'author', @$lists['order_Dir'], @$lists['order'] ); ?>
             </th>
 
-            <th width="3%">
-                <?php echo JHTML::_('grid.sort',   'Trạng Thái', 'g.status', @$lists['order_Dir'], @$lists['order'] ); ?>
-            </th>
-            <th width="1%" class="title">
-                <?php echo JHTML::_('grid.sort',   'ID', 'c.id', @$lists['order_Dir'], @$lists['order'] ); ?>
-            </th>
+
         </tr>
         </thead>
-        <tfoot>
-        <tr>
-            <td colspan="15">
-                <?php echo $page->getListFooter(); ?>
-            </td>
-        </tr>
-        </tfoot>
+
         <tbody>
         <?php
         $k = 0;
@@ -92,23 +72,23 @@ JHTML::_('behavior.tooltip');
         for ($i=0, $n=count( $rows ); $i < $n; $i++)
         {
             $row = &$rows[$i];
+            $row->published = $row
             ?>
             <tr class="<?php echo "row$k"; ?>">
-                <td><?php echo $page->getRowOffset( $i ); ?></td>
-                <td align="center"><?php echo JHTML::_('grid.checkedout',   $row, $i );?></td>
+
                 <td>
-                    <a href="<?php echo JRoute::_( 'index.php?option=com_job_management&task=edit&cid[]='. $row->id ); ?>">
+                    <a href="<?php echo JRoute::_( 'index.php?option=com_job_management&task=view&jid='. $row->id ); ?>">
                         <?php echo htmlspecialchars($row->title, ENT_QUOTES); ?></a>
                 </td>
                 <td align="center" >
                     <a href="<?php echo JRoute::_( 'index.php?option=com_job_management&c=reply&jid='. $row->id ); ?>" class="count_reply" >
-                        <img src="images/message_f2.png">
+                        <span class="fa fa-comments-o font-size-23" ></span>
                         <i><?php echo JHTML::_('jobMg.ReplyCount',   $row)?></i>
                     </a>
                 </td>
                 <td class="text-center" >
                     <span class="count_uid ">
-                        <img src="images/users.png">
+                        <span class="fa fa-user font-size-23"></span>
                         <i><?php echo JHTML::_('jobMg.UidCount',   $row)?></i>
                     </span>
                 </td>
@@ -127,18 +107,8 @@ JHTML::_('behavior.tooltip');
                 </td>
                 <td align="center"><?php echo JHTML::_('jobMg.level',   $row, $i)?></td>
 
-                <td>
-                    <a href="<?php echo JRoute::_( 'index.php?option=com_job_management&c=group&task=edit&cid[]='. $row->groupid ) ?>" title="<?php echo JText::_( 'Edit Group' ); ?>">
-                        <?php echo $row->section_name; ?></a>
-                </td>
-
-                <td> <?php echo JHTML::_('jobMg.author',   $row)?>
-
-                </td>
-                <td align="center"><?php echo JHTML::_('grid.published',   $row,$i) ?></td>
-                <td>
-                    <?php echo $row->id; ?>
-                </td>
+                <td><?php echo $row->section_name; ?></td>
+                <td> <?php echo $row->author ;?></td>
             </tr>
             <?php
             $k = 1 - $k;
@@ -146,7 +116,7 @@ JHTML::_('behavior.tooltip');
         ?>
         </tbody>
     </table>
-    <?php //JHTML::_('content.legend'); ?>
+
 
     <input type="hidden" name="option" value="com_job_management" />
     <input type="hidden" name="task" value="" />
@@ -156,3 +126,4 @@ JHTML::_('behavior.tooltip');
     <input type="hidden" name="filter_order_Dir" value="<?php echo $lists['order_Dir']; ?>" />
     <?php echo JHTML::_( 'form.token' ); ?>
 </form>
+</div></div>

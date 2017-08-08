@@ -3,9 +3,9 @@
 	<name>Job Edit Form</name>
 	<params addpath="/administrator/components/com_job_management/elements">
 		<param name="creator" type="author" default="" label="Người Tạo" description="DETAILAUTHOR" />
-		<param name="access" type="list" size="20" default="0" label="Job Level" description="JOBLEVEL">
+		<param name="level" type="list" size="20" default="0" label="Job Level" description="JOBLEVEL">
 			<option value="normal">Bình Thường</option>
-			<option value="Emergency">Khẩn Cấp</option>
+			<option value="emergency">Khẩn Cấp</option>
 		</param>
 		<param name="created" type="calendar" default="" label="Ngày Tạo" description="DETAILCREATED" />
 		<param name="date_start" type="calendar" default="" label="Ngày Bắt Đầu" description="DATESTART" />

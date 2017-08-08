@@ -48,4 +48,6 @@ class JHTMLJobManagement
 		</table>
 		<?php
 	}
+
+
 }

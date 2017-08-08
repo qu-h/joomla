@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <name>Job Edit Form</name>
+    <params addpath="/administrator/components/com_job_management/elements">
+        <param name="creator" type="author" default="" label="Người Tạo" description="DETAILAUTHOR" />
+        <param name="level" type="list" size="20" default="0" label="Job Level" description="JOBLEVEL">
+            <option value="normal">Bình Thường</option>
+            <option value="emergency">Khẩn Cấp</option>
+        </param>
+        <param name="created" type="calendar" default="" label="Ngày Tạo" description="DETAILCREATED" />
+        <param name="date_start" type="calendar" default="" label="Ngày Bắt Đầu" description="DATESTART" />
+        <param name="date_end" type="calendar" default="" label="Ngày Kết Thúc" description="DATEEND" />
+    </params>
+    <params group="advanced">
+
+        <param name="language" type="languages" client="site" label="Content language" description="PARAMCONTENTLANGUAGE" />
+        <param name="keyref" type="text" size="25" default="" label="Key Reference" description="PARAMKEYREF" />
+        <param name="readmore" type="text" size="25" default="" label="Alternative Read more text" description="PARAMALTREADMORE" />
+    </params>
+
+</form>
