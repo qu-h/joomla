@@ -25,7 +25,13 @@ if( !class_exists($controllerName) ){
 if( !class_exists("JHTMLJobMg") ){
     require_once( JPATH_COMPONENT_ADMINISTRATOR.DS.'libraries'.DS.'jobMg.php' );
 }
+$user	=& JFactory::getUser();
+if ( $user->get('guest')) {
+    //JError::raiseError( 403, JText::_('Access Forbidden') );
 
+    global $mainframe;
+    $mainframe->redirect( 'index.php?option=com_user&view=login' );
+}
 $controller = new $controllerName();
 $controller->frontend = true;
 $controller->execute( $task );
