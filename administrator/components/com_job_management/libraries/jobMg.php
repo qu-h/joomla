@@ -6,7 +6,6 @@ class JHTMLJobMg extends  JHTML{
     );
     function level( &$row){
         $txt = "";
-        bug($row);
         if( isset($row->level) ){
             if( array_key_exists($row->level,self::$level) ){
                 $txt = self::$level[$row->level];
