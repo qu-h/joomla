@@ -1,14 +1,15 @@
 <?php
 class JHTMLJobMg extends  JHTML{
-    static $level = array(
-        "normal"=>"Bình Thường",
-        "emergency"=>"Khẩn Cấp"
-    );
+
     function level( &$row){
+        $level = array(
+            "normal"=>"Bình Thường",
+            "emergency"=>"Khẩn Cấp"
+        );
         $txt = "";
         if( isset($row->level) ){
-            if( array_key_exists($row->level,self::$level) ){
-                $txt = self::$level[$row->level];
+            if( array_key_exists($row->level,$level) ){
+                $txt = $level[$row->level];
             }
         }
         return $txt;
