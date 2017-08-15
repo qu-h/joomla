@@ -119,19 +119,6 @@ class JHTMLJobMg extends  JHTML{
 
             }
             if( $group != null ){
-//                $group_uid_query = "SELECT uid FROM #__jobmanagement_uid_map WHERE `group`='$group' AND `group_id` = $groupid";
-//
-//                $db->setQuery($group_uid_query);
-//                if (!$db->query())
-//                {
-//                    JError::raiseError( 500, $db->getErrorMsg() );
-//                    return false;
-//                }
-//                $group_uids = $db->loadObjectList();
-//
-//                if( !empty($group_uids) ) foreach ($group_uids AS $u){
-//                    $ids[] = $u->uid;
-//                }
                 $ids = self::UidMapUids($group,$groupid);
                 if( empty($ids) ){
                     $ids[] = 0;

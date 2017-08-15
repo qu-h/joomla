@@ -104,6 +104,7 @@ class JobMgControllerJob extends JController
 
         //JHTMLJobMg::LoadRole();
         if( $this->frontend ){
+
             $user		= & JFactory::getUser();
             $uid = $user->get('id');
             $UidMapTable = & JTable::getInstance('JobsUidMap');
@@ -135,8 +136,9 @@ class JobMgControllerJob extends JController
                 $job_ids = array_map(function ($object) { return $object->group_id; }, $db->loadObjectList());
                 if( count($job_ids) > 0 ){
                     $where[]= "j.id IN (".implode(",",$job_ids).")";
+                } else {
+                    $where[]= "j.id < 1";
                 }
-
             }
         }
 
