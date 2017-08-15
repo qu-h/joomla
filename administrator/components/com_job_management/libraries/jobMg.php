@@ -40,8 +40,7 @@ class JHTMLJobMg extends  JHTML{
         $query = 'SELECT c.id, c.name' .
             ' FROM #__jobmanagement_company AS c'
             .' WHERE c.status=1'
-            .' GROUP BY c.id'
-            .' ORDER BY c.name, c.id';
+            .' GROUP BY c.id ORDER BY c.name, c.id';
         $companys[] = JHTML::_('select.option', '0', '- '.JText::_('Select Company').' -', 'id', 'name');
         $db	    = & JFactory::getDBO();
         $db->setQuery($query);
@@ -77,21 +76,29 @@ class JHTMLJobMg extends  JHTML{
         return JHTML::_('select.genericlist',  $authors, $inputname, 'class="inputbox" size="1" onchange="document.adminForm.submit( );"', 'id', 'name', $selected_id);
     }
 
-    function groupSelect($selected_id=-1,$submit=false,$name=NULL){
+    function GroupSelect($job_object,$submit=false,$name=NULL){
         $groups[] = JHTML::_('select.option', '-1', JText::_( '-- Chọn nhóm Công việc --' ), 'id', 'title');
 
         $query = 'SELECT g.id, g.title' .
             ' FROM #__jobmanagement_group AS g' .
-            ' WHERE g.status > 0'.
-            ' ORDER BY g.title';
+            ' WHERE g.status > 0';
+
+        $selected_id = 0;
+        if( get_class($job_object)=="JTableJobManagementJob" ){
+            $selected_id = $job_object->groupid;
+            $query .= " AND g.company = ".$job_object->companyid;
+        }
+
+        $query .= ' ORDER BY g.title';
+
         $db	= & JFactory::getDBO();
         $db->setQuery($query);
         $groups = array_merge($groups, $db->loadObjectList());
-        //return $groups;
 
         if( is_null($name) ){
             $name = "groupid";
         }
+
         $javascript = $submit ? 'onchange="javascript: submitbutton(\'updateformval\');"' : NULL;
         return JHTML::_('select.genericlist',  $groups, $name, 'class="form-control custom-select" size="1" '.$javascript, 'id', 'title', intval($selected_id));
     }

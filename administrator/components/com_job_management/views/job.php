@@ -65,8 +65,14 @@ $controllerName = JRequest::getCmd( 'c', 'job' );
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label><?php echo JText::_( 'Job Group' ); ?></label>
-                            <?php echo JHTMLJobMg::groupSelect($row->groupid,true,"groupid"); ?>
+                            <label><?php echo JText::_( 'Nhóm việc' ); ?></label>
+                            <?php echo JHTMLJobMg::CompanySelelect($row->companyid,"companyid",true); ?>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label><?php echo JText::_( 'Nhóm việc' ); ?></label>
+                            <?php echo JHTMLJobMg::GroupSelect($row,true,"groupid"); ?>
                         </div>
                     </div>
                     <div class="col-md-6">

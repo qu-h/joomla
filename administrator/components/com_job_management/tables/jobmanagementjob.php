@@ -6,6 +6,7 @@ class JTableJobManagementJob extends JTable
 	var $id	= null;
 	var $title	= '';
 	var $level = "";
+    var $companyid = 0;
 	var $groupid = 0;
     var $content	= '';
 	var $creator	= null;
