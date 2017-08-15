@@ -5,6 +5,7 @@ jimport( 'joomla.application.component.controller' );
 class JobMgControllerJob extends JController
 {
     var $frontend = false;
+    var $com = "com_job_management";
     function __construct($config = array())
     {
         parent::__construct($config);
@@ -118,7 +119,10 @@ class JobMgControllerJob extends JController
                 $company_ids = array_values($db->loadObjectList());
 
                 $company_ids = array_map(function ($object) { return $object->group_id; }, $db->loadObjectList());
-                $where[]= "g.company IN (".implode(",",$company_ids).")";
+                if( count($company_ids) > 0 ){
+                    $where[]= "g.company IN (".implode(",",$company_ids).")";
+                }
+
             } else {
                 $db->setQuery("SELECT group_id FROM ".$UidMapTable->_tbl." WHERE `group` = 'job' AND `uid` = $uid");
 
@@ -129,7 +133,10 @@ class JobMgControllerJob extends JController
                 }
                 $job_ids = array_values($db->loadObjectList());
                 $job_ids = array_map(function ($object) { return $object->group_id; }, $db->loadObjectList());
-                $where[]= "j.id IN (".implode(",",$job_ids).")";
+                if( count($job_ids) > 0 ){
+                    $where[]= "j.id IN (".implode(",",$job_ids).")";
+                }
+
             }
         }
 
@@ -417,8 +424,6 @@ class JobMgControllerJob extends JController
     {
         global $mainframe;
 
-
-//        // Initialize variables
         $db				= & JFactory::getDBO();
         $id				= JRequest::getVar( 'jid', 0, '', 'int' );
 
@@ -434,22 +439,18 @@ class JobMgControllerJob extends JController
 
         $get_uids_query = "SELECT uid FROM #__jobmanagement_job_user WHERE job_id = ".$row->id;
         $db->setQuery($get_uids_query);
-
-        $uids = $db->loadObjectList();
-
-        if ($id) {
-            if ($row->status < 0) {
-                $mainframe->redirect('index.php?option='.$this->com, JText::_('You cannot edit an archived item'));
+        if ($id AND $row->status < 0 AND $this->frontend != true ) {
+            $mainframe->redirect('index.php?option='.$this->com, JText::_('You cannot edit an archived item'));
+        }
+        if( $row->viewed < 1 ){
+            $db->setQuery('UPDATE #__jobmanagement_job SET viewed = 1 WHERE id='.$row->id);
+            if (!$db->query())
+            {
+                JError::raiseError( 500, $db->getErrorMsg() );
+                return false;
             }
         }
 
-        $updateview_query = 'UPDATE #__jobmanagement_job SET viewed = 1 WHERE id='.$row->id;
-        $db->setQuery($updateview_query);
-        if (!$db->query())
-        {
-            JError::raiseError( 500, $db->getErrorMsg() );
-            return false;
-        }
         
         include_once JPATH_COMPONENT.DS.'views/job_view.php';
 

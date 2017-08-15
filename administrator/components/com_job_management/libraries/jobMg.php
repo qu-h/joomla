@@ -119,19 +119,20 @@ class JHTMLJobMg extends  JHTML{
 
             }
             if( $group != null ){
-                $group_uid_query = "SELECT uid FROM #__jobmanagement_uid_map WHERE `group`='$group' AND `group_id` = $groupid";
-               ;
-                $db->setQuery($group_uid_query);
-                if (!$db->query())
-                {
-                    JError::raiseError( 500, $db->getErrorMsg() );
-                    return false;
-                }
-                $group_uids = $db->loadObjectList();
-
-                if( !empty($group_uids) ) foreach ($group_uids AS $u){
-                    $ids[] = $u->uid;
-                }
+//                $group_uid_query = "SELECT uid FROM #__jobmanagement_uid_map WHERE `group`='$group' AND `group_id` = $groupid";
+//
+//                $db->setQuery($group_uid_query);
+//                if (!$db->query())
+//                {
+//                    JError::raiseError( 500, $db->getErrorMsg() );
+//                    return false;
+//                }
+//                $group_uids = $db->loadObjectList();
+//
+//                if( !empty($group_uids) ) foreach ($group_uids AS $u){
+//                    $ids[] = $u->uid;
+//                }
+                $ids = $this->UidMapUids($group,$groupid);
                 if( empty($ids) ){
                     $ids[] = 0;
                 }
@@ -168,6 +169,38 @@ class JHTMLJobMg extends  JHTML{
         }
 
         include_once JPATH_BASE.DS.'components/com_job_management/views/ui/SelectMultiUsers.php';
+    }
+
+    function UidMapUids($group="job",$group_id=0){
+        $db	    = & JFactory::getDBO();
+        $UidMapTable = & JTable::getInstance('JobsUidMap');
+
+        $group_uid_query = "SELECT uid FROM ".$UidMapTable->_tbl." WHERE `group`='$group' AND `group_id` = $group_id";
+
+        $db->setQuery($group_uid_query);
+        if (!$db->query())
+        {
+            JError::raiseError( 500, $db->getErrorMsg() );
+            return false;
+        }
+        $uids = array_map(function ($object) { return $object->uid; }, $db->loadObjectList());
+        return $uids;
+    }
+
+    function UidMapGroupIds($group="job",$uid=0){
+        $db	    = & JFactory::getDBO();
+        $UidMapTable = & JTable::getInstance('JobsUidMap');
+
+        $group_uid_query = "SELECT group_id FROM ".$UidMapTable->_tbl." WHERE `group`='$group' AND `uid` = $uid";
+
+        $db->setQuery($group_uid_query);
+        if (!$db->query())
+        {
+            JError::raiseError( 500, $db->getErrorMsg() );
+            return false;
+        }
+        $group_ids = array_map(function ($object) { return $object->group_id; }, $db->loadObjectList());
+        return $group_ids;
     }
 
     function UidCount(&$row, $type="job"){

@@ -57,8 +57,10 @@ $colLeft = 3;
         <label class="col-<?php echo $colLeft ?> col-form-label"><?php echo JText::_( 'Người tham gia' ); ?></label>
         <div class="col-<?php echo 12-$colLeft ?>">
             <p class="form-control-static userfront">
-                <?php if( isset($uids) && !empty($uids) ):  foreach ($uids AS $u):?>
-                    <span class="fa fa-user" title="<?php echo JHTMLJobMg::GetUserDetail($u->uid) ?>"></span>
+                <?php
+                $uids = JHTMLJobMg::UidMapUids("job",$row->id);
+                if( isset($uids) && !empty($uids) ):  foreach ($uids AS $uid):?>
+                    <span class="fa fa-user" title="<?php echo JHTMLJobMg::GetUserDetail($uid) ?>"></span>
                     <?php endforeach;?>
                 <?php else :?>
                     Không có người nào
