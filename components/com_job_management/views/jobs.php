@@ -56,6 +56,7 @@ $ordering = ($lists['order'] == 'section_name' || $lists['order'] == 'cc.title' 
         <?php
         $k = 0;
         $nullDate = $db->getNullDate();
+        if( count( $rows ) > 0 ):
         for ($i=0, $n=count( $rows ); $i < $n; $i++)
         {
             $row = &$rows[$i];
@@ -115,7 +116,9 @@ $ordering = ($lists['order'] == 'section_name' || $lists['order'] == 'cc.title' 
             <?php
             $k = 1 - $k;
         }
-        ?>
+        else : ?>
+            <tr><td class="text-center" colspan="10">Không có công việc nào</td></tr>
+        <?php endif; ?>
         </tbody>
     </table>
 
