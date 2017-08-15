@@ -21,8 +21,14 @@ class TOOLBAR_JobManagement
             case "reply":
                 $page_title = "Thảo Luận";
                 break;
+            case "company":
+                $page_title = "Công Ty";
+                break;
+            case "position":
+                $page_title = "Chức Vụ";
+                break;
             default:
-                $page_title = "Công việc";
+                $page_title = "Công Việc";
                 $item = "";
                 break;
         }
@@ -38,20 +44,20 @@ class TOOLBAR_JobManagement
 		}
 	}
 
-	function _MOVE()
-	{
-		JToolBarHelper::title( JText::_( 'Move Articles' ), 'move_f2.png' );
-		JToolBarHelper::custom( 'movesectsave', 'save.png', 'save_f2.png', 'Save', false );
-		JToolBarHelper::cancel();
-	}
-
-
-    function _GROUP()
-    {
-        JToolBarHelper::title( JText::_( 'Nhóm công việc' ), 'article.png' );
-        JToolBarHelper::addNewX("addgroup");
-        JToolBarHelper::trash("removegroup");
-    }
+//	function _MOVE()
+//	{
+//		JToolBarHelper::title( JText::_( 'Move Articles' ), 'move_f2.png' );
+//		JToolBarHelper::custom( 'movesectsave', 'save.png', 'save_f2.png', 'Save', false );
+//		JToolBarHelper::cancel();
+//	}
+//
+//
+//    function _GROUP()
+//    {
+//        JToolBarHelper::title( JText::_( 'Nhóm công việc' ), 'article.png' );
+//        JToolBarHelper::addNewX("addgroup");
+//        JToolBarHelper::trash("removegroup");
+//    }
 
 	function _DEFAULT()
 	{
@@ -64,6 +70,10 @@ class TOOLBAR_JobManagement
         switch ($task){
             case "group":
                 $page_title = "Danh sách nhóm công việc";
+                $icon = "module";
+                break;
+            case "position":
+                $page_title = "Danh sách Chức vụ";
                 $icon = "module";
                 break;
             case "reply":
@@ -81,10 +91,10 @@ class TOOLBAR_JobManagement
                 break;
         }
 		JToolBarHelper::title( JText::_( $page_title ), $icon );
-        JToolBarHelper::addNewX();
+        JToolBarHelper::addNewX("add","Thêm Mới");
         if( $task=="job" ){
             JToolBarHelper::custom( 'jobclose', 'default.png', 'archive_f2.png', 'Đóng', false );
         }
-        JToolBarHelper::trash();
+        JToolBarHelper::trash("remove","Xóa");
 	}
 }

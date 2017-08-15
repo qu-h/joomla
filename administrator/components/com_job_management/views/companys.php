@@ -13,6 +13,7 @@ $now	=& JFactory::getDate();
 $ordering = ($lists['order'] == 'section_name' || $lists['order'] == 'cc.title' || $lists['order'] == 'c.ordering');
 JHTML::_('behavior.tooltip');
 
+$controllerName = JRequest::getCmd( 'c', 'job' );
 
 
 ?>
@@ -45,10 +46,7 @@ JHTML::_('behavior.tooltip');
                 <input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count( $rows ); ?>);" />
             </th>
             <th class="text-left">
-                <?php echo JHTML::_('grid.sort',   'Title', 'c.title', @$lists['order_Dir'], @$lists['order'] ); ?>
-            </th>
-            <th class="text-left">
-                <?php echo JHTML::_('grid.sort',   'Company', 'c.company', @$lists['order_Dir'], @$lists['order'] ); ?>
+                <?php echo JHTML::_('grid.sort',   'Name', 'c.title', @$lists['order_Dir'], @$lists['order'] ); ?>
             </th>
             <th class="text-center" width="5%">
                 <?php echo JText::_( 'User' ); ?>
@@ -79,7 +77,7 @@ JHTML::_('behavior.tooltip');
         {
             $row = &$rows[$i];
 
-            $link 	= 'index.php?option=com_job_management&c=group&task=edit&cid[]='. $row->id;
+            $link 	= 'index.php?option=com_job_management&c=company&task=edit&cid[]='. $row->id;
 
             $checked 	= JHTML::_('grid.checkedout',   $row, $i );
             $row->published = $row->status ==1;
@@ -93,26 +91,15 @@ JHTML::_('behavior.tooltip');
                 </td>
                 <td>
                     <?php
-                    if ($row->state == -1) {
-                        echo htmlspecialchars($row->title, ENT_QUOTES, 'UTF-8');
+                    if (  JTable::isCheckedOut($user->get ('id'), $row->checked_out ) ) {
+                        echo $row->title;
+                    } else if ($row->state == -1) {
+                        echo htmlspecialchars($row->name, ENT_QUOTES, 'UTF-8');
                         echo ' [ '. JText::_( 'Archived' ) .' ]';
                     } else {
                         ?>
                         <a href="<?php echo JRoute::_( $link ); ?>">
-                            <?php echo htmlspecialchars($row->title, ENT_QUOTES); ?></a>
-                        <?php
-                    }
-                    ?>
-                </td>
-                <td>
-                    <?php
-                    if ($row->state == -1) {
-                        echo htmlspecialchars($row->company_name, ENT_QUOTES, 'UTF-8');
-                        echo ' [ '. JText::_( 'Archived' ) .' ]';
-                    } else {
-                        ?>
-                        <a href="<?php echo JRoute::_( 'index.php?option=com_job_management&c=company&task=edit&cid[]='. $row->company ); ?>">
-                            <?php echo htmlspecialchars($row->company_name, ENT_QUOTES); ?></a>
+                            <?php echo htmlspecialchars($row->name, ENT_QUOTES); ?></a>
                         <?php
                     }
                     ?>
@@ -120,7 +107,7 @@ JHTML::_('behavior.tooltip');
                 <td class="text-center" >
                     <span class="count_uid ">
                         <img src="images/users.png">
-                        <i><?php echo JHTML::_('jobMg.UidCount',   $row,'group')?></i>
+                        <i><?php echo JHTML::_('jobMg.UidCount',   $row, "company")?></i>
                     </span>
                 </td>
                 <td> <?php echo JHTML::_('jobMg.author',   $row)?></td>
@@ -137,8 +124,8 @@ JHTML::_('behavior.tooltip');
         </tbody>
     </table>
     <input type="hidden" name="option" value="com_job_management" />
-    <input type="hidden" name="task" value="" />
-    <input type="hidden" name="returntask" value="group" />
+    <input type="hidden" name="task" value="<?php echo $controllerName; ?>" />
+    <input type="hidden" name="returntask" value="<?php echo $controllerName; ?>" />
     <input type="hidden" name="boxchecked" value="0" />
     <input type="hidden" name="redirect" value="<?php echo $redirect;?>" />
     <input type="hidden" name="filter_order" value="<?php echo $lists['order']; ?>" />

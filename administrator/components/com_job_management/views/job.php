@@ -48,6 +48,7 @@
 </script>
 <?php
 JHTML::stylesheet("css/bootstrap.min.css","components/com_job_management/assets/");
+$controllerName = JRequest::getCmd( 'c', 'job' );
 ?>
 <form action="index.php" method="post" name="adminForm">
 
@@ -118,7 +119,7 @@ JHTML::stylesheet("css/bootstrap.min.css","components/com_job_management/assets/
     <input type="hidden" name="mask" value="0" />
     <input type="hidden" name="option" value="<?php echo $option;?>" />
     <input type="hidden" name="task" value="" />
-    <input type="hidden" name="c" value="job" />
+    <input type="hidden" name="c" value="<?php echo $controllerName; ?>" />
     <?php echo JHTML::_( 'form.token' ); ?>
 </form>
 <?php

@@ -6,6 +6,7 @@ class TableJobManagementGroup extends JTable
 	var $id	= null;
 	var $title	= '';
 	var $creator	= null;
+	var $company = 0;
 	var $created = "";
     var $modifier	= null;
     var $modified = "";

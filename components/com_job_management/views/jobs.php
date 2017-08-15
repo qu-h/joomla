@@ -20,7 +20,9 @@ $ordering = ($lists['order'] == 'section_name' || $lists['order'] == 'cc.title' 
     <table class="table table-hover table-responsive" >
         <thead>
         <tr>
-
+            <td style="display: none">
+                <?php echo JText::_( 'Num' ); ?>
+            </td>
             <th class="text-left">
                 <?php echo JHTML::_('grid.sort',   'Tên Công Việc', 'g.title', @$lists['order_Dir'], @$lists['order'] ); ?>
             </th>
@@ -41,15 +43,12 @@ $ordering = ($lists['order'] == 'section_name' || $lists['order'] == 'cc.title' 
                 <?php echo JHTML::_('grid.sort',   'Cấp Độ', 'g.access', @$lists['order_Dir'], @$lists['order'] ); ?>
             </th>
             <th class="text-left" nowrap="nowrap" >
-                <?php echo JHTML::_('grid.sort',   'Job Group', 'section_name', @$lists['order_Dir'], @$lists['order'] ); ?>
+                <?php echo JHTML::_('grid.sort',   'Nhóm Việc', 'section_name', @$lists['order_Dir'], @$lists['order'] ); ?>
             </th>
 
-            <th  class="title text-left" >
-                <?php echo JHTML::_('grid.sort',   'Author', 'author', @$lists['order_Dir'], @$lists['order'] ); ?>
-            </th>
             <th width="1%" class="title">Quá hạn</th>
             <th width="1%" class="title">Đã xem</th>
-
+            <th>Đóng</th>
         </tr>
         </thead>
 
@@ -63,7 +62,7 @@ $ordering = ($lists['order'] == 'section_name' || $lists['order'] == 'cc.title' 
             $row->published = $row
             ?>
             <tr class="<?php echo "row$k"; ?>">
-
+                <td style="display: none"><?php echo JHTML::_('grid.checkedout',   $row, $i );?></td>
                 <td>
                     <a href="<?php echo JRoute::_( 'index.php?option=com_job_management&task=view&jid='. $row->id ); ?>">
                         <?php echo htmlspecialchars($row->title, ENT_QUOTES); ?></a>
@@ -96,7 +95,7 @@ $ordering = ($lists['order'] == 'section_name' || $lists['order'] == 'cc.title' 
                 <td align="center"><?php echo JHTML::_('jobMg.level',   $row, $i)?></td>
 
                 <td><?php echo $row->section_name; ?></td>
-                <td> <?php echo $row->author ;?></td>
+
                 <td class="userfront">
                     <?php if( strtotime($row->date_end) < time() && $row->status !=-1 ):?>
                         <i class="fa fa-ban red "></i>
@@ -111,6 +110,7 @@ $ordering = ($lists['order'] == 'section_name' || $lists['order'] == 'cc.title' 
                         <i class="fa fa-eye-slash red"></i>
                     <?php endif; ?>
                 </td>
+                <td align="center" class="userfront" ><?php echo JHTMLJobMg::JobClose($row,$i) ?></td>
             </tr>
             <?php
             $k = 1 - $k;

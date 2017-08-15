@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.5" type="plugin" group="user">
+	<name>Job Manager - User Role</name>
+	<author>QuanICT</author>
+	<creationDate>August 2017</creationDate>
+	<copyright>Copyright (C) 2005 - 2010 Open Source Matters. All rights reserved.</copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<authorEmail>hongquan2712@gmail.com</authorEmail>
+	<authorUrl>giaiphapict.com</authorUrl>
+	<version>1.0</version>
+	<description>Phân quyền chức vụ cho người dùng</description>
+	<files>
+		<filename plugin="user">user.php</filename>
+	</files>
+	<params/>
+</install>

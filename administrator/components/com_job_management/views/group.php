@@ -8,13 +8,31 @@ JHTML::stylesheet("css/bootstrap.min.css","components/com_job_management/assets/
                 <label for="title"><?php echo JText::_( 'Tên Nhóm công việc' ); ?></label>
                 <input class="form-control" type="text" name="title" id="title"maxlength="255" value="<?php echo $row->title; ?>" />
             </div>
-            <div class="form-group">
-                <label><?php echo JText::_( 'Published' ); ?></label>
-                <?php echo JHTMLJobMg::PublishSelelect($row->status,"status"); ?>
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label><?php echo JText::_( 'Company' ); ?></label>
+                        <?php echo JHTMLJobMg::CompanySelelect($row->company,"company",true); ?>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label><?php echo JText::_( 'Published' ); ?></label>
+                        <?php echo JHTMLJobMg::PublishSelelect($row->status,"status"); ?>
+                    </div>
+                </div>
             </div>
+
             <div class="form-group">
+
                 <label><?php echo JText::_( 'Select User' ); ?></label>
-                <?php echo JHTMLJobMg::SelectMultiUsers(NULL,"users",$row->id,'group'); ?>
+                <?php
+
+                //if( !$_POST || empty($_POST) ){
+                    JRequest::setVar( 'groupid', $row->company );
+                //}
+                echo JHTMLJobMg::SelectMultiUsers(NULL,"users",$row->id,'group');
+                ?>
             </div>
         </div>
         <div class="col-md-4 pt-3" style="border: 1px dashed silver;">

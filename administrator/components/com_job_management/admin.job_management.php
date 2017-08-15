@@ -27,59 +27,5 @@ if( !class_exists("JHTMLJobManagement") ){
 }
 
 $controller = new $controllerName();
-//bug("taks=$task");die;
 $controller->execute( $task );
 $controller->redirect();
-
-//$controller = new JobManagementController();
-
-//$task = JRequest::getCmd('task');
-//
-//switch (strtolower($task))
-//{
-//    case "group":
-//        $controller->viewGroups();
-//        break;
-//    case "addgroup":
-//        $controller->formGroup();
-//        break;
-//    case "groupedit":
-//        $controller->formGroup(true);
-//    case 'groupapply' :
-//    case 'groupsave' :
-//        $controller->saveGroup();
-//        break;
-//    case 'removegroup' :
-//        $controller->removeGroup();
-//        break;
-//
-//
-//    case 'add'  :
-//    case 'new'  :
-//        $controller->formJob(false);
-//        break;
-//
-//    case 'edit' :
-//        $controller->formJob(true);
-//        break;
-//
-//    case 'apply' :
-//    case 'save' :
-//        $controller->saveJob();
-//        break;
-//    case 'remove' :
-//        $controller->removeJobs();
-//		break;
-//
-//	case 'cancel' :
-//        $controller->cancelContent();
-//		break;
-//
-//	case 'ins_pagebreak' :
-//		ContentController::insertPagebreak();
-//		break;
-//
-//	default :
-//        $controller->viewJobs();
-//		break;
-//}

@@ -26,24 +26,16 @@ if( !class_exists("JHTMLJobMg") ){
     require_once( JPATH_COMPONENT_ADMINISTRATOR.DS.'libraries'.DS.'jobMg.php' );
 }
 $user	=& JFactory::getUser();
+$user_position = array();
 if ( $user->get('guest')) {
-    //JError::raiseError( 403, JText::_('Access Forbidden') );
-
     global $mainframe;
     $mainframe->redirect( 'index.php?option=com_user&view=login' );
+} else {
+    $user_position = JHTMLJobMg::LoadRole();
+
 }
+
 $controller = new $controllerName();
 $controller->frontend = true;
 $controller->execute( $task );
 $controller->redirect();
-// Create the controller
-//$controller = new ContentController();
-//
-//// Register Extra tasks
-//$controller->registerTask( 'new'  , 	'edit' );
-//$controller->registerTask( 'apply', 	'save' );
-//$controller->registerTask( 'apply_new', 'save' );
-//
-//// Perform the Request task
-//$controller->execute(JRequest::getVar('task', null, 'default', 'cmd'));
-//$controller->redirect();

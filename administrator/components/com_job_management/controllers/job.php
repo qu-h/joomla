@@ -26,7 +26,6 @@ class JobMgControllerJob extends JController
 
         // Get some variables from the request
         $sectionid			= JRequest::getVar( 'sectionid', -1, '', 'int' );
-        //$groupid			= JRequest::getVar( 'groupid', -1, '', 'int' );
         $redirect			= $sectionid;
         $option				= JRequest::getCmd( 'option' );
         $context			= 'com_job_management.viewcontent';
@@ -50,7 +49,7 @@ class JobMgControllerJob extends JController
         $limitstart = ( $limit != 0 ? (floor($limitstart / $limit) * $limit) : 0 );
 
 
-        $where[] = 'j.status != -2';
+//        $where[] = 'j.status != -2';
 
 
         if ($filter_order == 'c.ordering') {
@@ -72,7 +71,7 @@ class JobMgControllerJob extends JController
 
 
         if( $this->frontend ){
-            $where[] = 'j.status = 1';
+            $where[] = '(j.status > 0 OR j.status = -1)';
         } else if ($filter_state) {
             if ($filter_state == 'P') {
                 $where[] = 'j.status = 1';
@@ -85,6 +84,8 @@ class JobMgControllerJob extends JController
                     $where[] = 'j.status != -2';
                 }
             }
+        } else {
+            $where[] = 'j.status != -2';
         }
         // Keyword filter
         if ($search) {
@@ -92,31 +93,58 @@ class JobMgControllerJob extends JController
                 ' OR g.id = ' . (int) $search . ')';
         }
 
-        // Build the where clause of the content record query
-        $where = (count($where) ? ' WHERE '.implode(' AND ', $where) : '');
-
-        // Get the total number of records
-        $query = 'SELECT COUNT(*)' .
-            ' FROM #__content AS c' .
-            ' LEFT JOIN #__categories AS cc ON cc.id = c.catid' .
-            ' LEFT JOIN #__sections AS s ON s.id = c.sectionid' .
-            $where;
-        $db->setQuery($query);
-        $total = $db->loadResult();
-
-
-        // Create the pagination object
-        jimport('joomla.html.pagination');
-        $pagination = new JPagination($total, $limitstart, $limit);
 
         // Get the articles
         $query = 'SELECT j.*, g.title AS section_name, v.name AS author' .
             ' FROM #__jobmanagement_job AS j' .
             ' LEFT JOIN #__jobmanagement_group AS g ON g.id = j.groupid' .
-            ' LEFT JOIN #__users AS v ON v.id = j.creator' .
-            $where .
-            $order;
+            ' LEFT JOIN #__users AS v ON v.id = j.creator'
+            .' LEFT JOIN #__jobmanagement_company AS c ON c.id = g.company';
+
+        //JHTMLJobMg::LoadRole();
+        if( $this->frontend ){
+            $user		= & JFactory::getUser();
+            $uid = $user->get('id');
+            $UidMapTable = & JTable::getInstance('JobsUidMap');
+
+            if( JHTMLJobMg::isViewAll() == true ){
+                $db->setQuery("SELECT group_id FROM ".$UidMapTable->_tbl." WHERE `group` = 'company' AND `uid` = $uid");
+
+                if (!$db->query())
+                {
+                    JError::raiseError( 500, $db->getErrorMsg() );
+                    return false;
+                }
+                $company_ids = array_values($db->loadObjectList());
+
+                $company_ids = array_map(function ($object) { return $object->group_id; }, $db->loadObjectList());
+                $where[]= "g.company IN (".implode(",",$company_ids).")";
+            } else {
+                $db->setQuery("SELECT group_id FROM ".$UidMapTable->_tbl." WHERE `group` = 'job' AND `uid` = $uid");
+
+                if (!$db->query())
+                {
+                    JError::raiseError( 500, $db->getErrorMsg() );
+                    return false;
+                }
+                $job_ids = array_values($db->loadObjectList());
+                $job_ids = array_map(function ($object) { return $object->group_id; }, $db->loadObjectList());
+                $where[]= "j.id IN (".implode(",",$job_ids).")";
+            }
+        }
+
+        // Build the where clause of the content record query
+        $where = (count($where) ? ' WHERE '.implode(' AND ', $where) : '');
+        $query .=$where . $order;
+        $db->setQuery($query);
+        $total = $db->loadResult();
+        // Create the pagination object
+        jimport('joomla.html.pagination');
+        $pagination = new JPagination($total, $limitstart, $limit);
+
         $db->setQuery($query, $pagination->limitstart, $pagination->limit);
+
+
         $rows = $db->loadObjectList();
 
         // If there is a database query error, throw a HTTP 500 and exit
@@ -478,18 +506,7 @@ class JobMgControllerJob extends JController
 
     function cancel()
     {
-        global $mainframe;
-
-        JRequest::checkToken() or jexit( 'Invalid Token' );
-
-        // Initialize variables
-        $db	= & JFactory::getDBO();
-
-        $row = & JTable::getInstance('content');
-        $row->bind(JRequest::get('post'));
-        $row->checkin();
-
-        $mainframe->redirect('index.php?option=com_job_management&c=job');
+        JHTMLJobManagement::Cancel("job");
     }
 
     function jobclose(){
@@ -512,6 +529,18 @@ class JobMgControllerJob extends JController
         }
         $task = JRequest::getCmd('task');
         $status = $task == "unpublish" ? 0 : 1;
+        $this->update_status($status);
+    }
+
+    function close(){
+
+        global $mainframe;
+        $cid		= JRequest::getVar( 'cid', array(), 'post', 'array' );
+        if (count($cid) < 1) {
+            $msg =  JText::_('Phải chọn công việc để thực hiện');
+            $mainframe->redirect('index.php?option=com_job_management', $msg, 'error');
+        }
+        $status = -1;
         $this->update_status($status);
     }
 

@@ -2,11 +2,8 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 jimport( 'joomla.application.component.controller' );
 
-class JobMgControllerGroup extends JController
+class JobMgControllerCompany extends JController
 {
-    /**
-     * Constructor
-     */
     function __construct($config = array())
     {
         parent::__construct($config);
@@ -34,19 +31,13 @@ class JobMgControllerGroup extends JController
         $catid				= $mainframe->getUserStateFromRequest( $context.'catid',			'catid',			0,	'int' );
         $filter_authorid	= $mainframe->getUserStateFromRequest( $context.'filter_authorid',	'filter_authorid',	0,	'int' );
         $filter_sectionid	= $mainframe->getUserStateFromRequest( $context.'filter_sectionid',	'filter_sectionid',	-1,	'int' );
-        $search				= $mainframe->getUserStateFromRequest( $context.'search',			'search',			'',	'string' );
-        if (strpos($search, '"') !== false) {
-            $search = str_replace(array('=', '<'), '', $search);
-        }
-        $search = JString::strtolower($search);
+
+
 
         $limit		= $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
         $limitstart	= $mainframe->getUserStateFromRequest($context.'limitstart', 'limitstart', 0, 'int');
-
-        // In case limit has been changed, adjust limitstart accordingly
         $limitstart = ( $limit != 0 ? (floor($limitstart / $limit) * $limit) : 0 );
 
-        //$where[] = "c.state >= 0";
         $where[] = 'g.status != -2';
 
 
@@ -69,53 +60,48 @@ class JobMgControllerGroup extends JController
             }
         }
         // Keyword filter
+        $search				= $mainframe->getUserStateFromRequest( $context.'search',			'search',			'',	'string' );
+        if (strpos($search, '"') !== false) {
+            $search = str_replace(array('=', '<'), '', $search);
+        }
+        $search = JString::strtolower($search);
         if ($search) {
             $where[] = '(LOWER( c.title ) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false ) .
                 ' OR c.id = ' . (int) $search . ')';
         }
+        $lists['search'] = $search;
 
         // Build the where clause of the content record query
         $where = (count($where) ? ' WHERE '.implode(' AND ', $where) : '');
-
-        // Get the total number of records
-        $query = 'SELECT COUNT(*)' .
-            ' FROM #__content AS c' .
-            ' LEFT JOIN #__categories AS cc ON cc.id = c.catid' .
-            ' LEFT JOIN #__sections AS s ON s.id = c.sectionid' .
+        $order = "";
+        // Get the articles
+        $query = 'SELECT g.*, v.name AS author' .
+            ' FROM #__jobmanagement_company AS g' .
+            ' LEFT JOIN #__users AS v ON v.id = g.creator' .
             $where;
+
         $db->setQuery($query);
         $total = $db->loadResult();
 
-
-        // Create the pagination object
         jimport('joomla.html.pagination');
         $pagination = new JPagination($total, $limitstart, $limit);
 
-        $order = "";
-        // Get the articles
-        $query = 'SELECT g.*, v.name AS author, c.name AS company_name' .
-            ' FROM #__jobmanagement_group AS g' .
-            ' LEFT JOIN #__users AS v ON v.id = g.creator' .
-            ' LEFT JOIN #__jobmanagement_company AS c ON c.id = g.company' .
-            $where .
-            $order;
-        $db->setQuery($query, $pagination->limitstart, $pagination->limit);
-        $rows = $db->loadObjectList();
+        $db->setQuery($query.$order, $pagination->limitstart, $pagination->limit);
+
 
         // If there is a database query error, throw a HTTP 500 and exit
         if ($db->getErrorNum()) {
             JError::raiseError( 500, $db->stderr() );
             return false;
         }
-
+        $rows = $db->loadObjectList();
         // search filter
-        $lists['search'] = $search;
+
         $lists['authorid'] = JHTMLJobMg::AuthorSelect("filter_authorid",$filter_authorid);
         // state filter
         $lists['status'] = JHTML::_('grid.state', $filter_state, 'Published', 'Unpublished');
 
-
-        include_once JPATH_COMPONENT.DS.'views/groups.php';
+        include_once JPATH_COMPONENT.DS.'views/companys.php';
     }
 
 
@@ -139,7 +125,7 @@ class JobMgControllerGroup extends JController
         $sectionid		= 0;
 
         // Create and load the content table row
-        $row = & JTable::getInstance('JobmanagementGroup','Table');
+        $row = & JTable::getInstance('JobmanagementCompany','Table');
 
         if($edit)
             $row->load($id);
@@ -242,33 +228,7 @@ class JobMgControllerGroup extends JController
 
         JHTML::_('behavior.tooltip');
 
-        include_once JPATH_COMPONENT.DS.'views/group.php';
-    }
-
-    function updateformval(){
-
-        $id				= JRequest::getVar( 'id', 0, '', 'int' );
-        $option			= JRequest::getCmd( 'option' );
-        $db		= & JFactory::getDBO();
-
-        $row = & JTable::getInstance('JobmanagementGroup',"Table");
-
-        if (!$row->bind(JRequest::get('post'))) {
-            JError::raiseError( 500, $db->stderr() );
-            return false;
-        }
-
-        $row->id = (int) $row->id;
-
-        jimport('joomla.html.pane');
-        JFilterOutput::objectHTMLSafe( $row );
-
-        $editor = &JFactory::getEditor();
-        $pane	= &JPane::getInstance('sliders', array('allowAllClose' => true));
-
-        JHTML::_('behavior.tooltip');
-
-        include_once JPATH_COMPONENT.DS.'views/group.php';
+        include_once JPATH_COMPONENT.DS.'views/company.php';
     }
 
     function save()
@@ -290,7 +250,7 @@ class JobMgControllerGroup extends JController
 
         $nullDate	= $db->getNullDate();
 
-        $row = & JTable::getInstance('JobManagementGroup',"Table");
+        $row = & JTable::getInstance('JobManagementCompany',"Table");
         if (!$row->bind(JRequest::get('post'))) {
             JError::raiseError( 500, $db->stderr() );
             bug($db->stderr());die;
@@ -322,8 +282,6 @@ class JobMgControllerGroup extends JController
         // Get a state and parameter variables from the request
         $row->status	= JRequest::getVar( 'status', 0, '', 'int' );
 
-
-
         // Make sure the data is valid
         if (!$row->check()) {
             JError::raiseError( 500, $db->stderr() );
@@ -341,20 +299,20 @@ class JobMgControllerGroup extends JController
             JError::raiseError( 500, $db->stderr() );
             return false;
         }
-        JHTMLJobManagement::update_users_link("group",$row->id);
+        JHTMLJobManagement::update_users_link("company",$row->id);
         $dispatcher->trigger('onAfterContentSave', array(&$row, $isNew));
 
         switch ($task)
         {
             case 'groupapply' :
-                $msg = JText::sprintf('SUCCESSFULLY SAVED CHANGES TO Job Group', $row->title);
-                $mainframe->redirect('index.php?option=com_job_management&c=group&task=edit&cid[]='.$row->id, $msg);
+                $msg = JText::sprintf('SUCCESSFULLY SAVED CHANGES TO Company', $row->title);
+                $mainframe->redirect('index.php?option=com_job_management&c=company&task=edit&cid[]='.$row->id, $msg);
                 break;
 
             case 'groupsave' :
             default :
-                $msg = JText::sprintf('Successfully Saved Job Group', $row->title);
-                $mainframe->redirect('index.php?option=com_job_management&c=group', $msg);
+                $msg = JText::sprintf('Successfully Saved Company', $row->title);
+                $mainframe->redirect('index.php?option=com_job_management&c=company', $msg);
                 break;
         }
     }
@@ -377,14 +335,14 @@ class JobMgControllerGroup extends JController
         JArrayHelper::toInteger($cid);
 
         if (count($cid) < 1) {
-            $msg =  JText::_('Select an Job Group to delete');
+            $msg =  JText::_('Select an Company to delete');
             $mainframe->redirect('index.php?option='.$option, $msg, 'error');
         }
 
         $cids = implode(',', $cid);
 
         // Update articles in the database
-        $query = 'DELETE FROM  #__jobmanagement_group' .
+        $query = 'DELETE FROM  #__jobmanagement_company' .
             ' WHERE id IN ( '. $cids. ' )';
         $db->setQuery($query);
         if (!$db->query())
@@ -393,17 +351,14 @@ class JobMgControllerGroup extends JController
             return false;
         }
 
-        $cache = & JFactory::getCache('com_content');
-        $cache->clean();
-
-        $msg = JText::sprintf('Job Group(s) removed', count($cid));
+        $msg = JText::sprintf('Company(s) removed', count($cid));
         $mainframe->redirect('index.php?option='.$option.'&c=group', $msg);
     }
 
     function cancel()
     {
         global $mainframe;
-
-        JHTMLJobManagement::Cancel("group");
+        JRequest::checkToken() or jexit( 'Invalid Token' );
+        $mainframe->redirect('index.php?option=com_job_management&c=company');
     }
 }
