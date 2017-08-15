@@ -132,7 +132,7 @@ class JHTMLJobMg extends  JHTML{
 //                if( !empty($group_uids) ) foreach ($group_uids AS $u){
 //                    $ids[] = $u->uid;
 //                }
-                $ids = $this->UidMapUids($group,$groupid);
+                $ids = self::UidMapUids($group,$groupid);
                 if( empty($ids) ){
                     $ids[] = 0;
                 }
@@ -171,7 +171,7 @@ class JHTMLJobMg extends  JHTML{
         include_once JPATH_BASE.DS.'components/com_job_management/views/ui/SelectMultiUsers.php';
     }
 
-    function UidMapUids($group="job",$group_id=0){
+    static function UidMapUids($group="job",$group_id=0){
         $db	    = & JFactory::getDBO();
         $UidMapTable = & JTable::getInstance('JobsUidMap');
 
@@ -184,6 +184,7 @@ class JHTMLJobMg extends  JHTML{
             return false;
         }
         $uids = array_map(function ($object) { return $object->uid; }, $db->loadObjectList());
+
         return $uids;
     }
 
