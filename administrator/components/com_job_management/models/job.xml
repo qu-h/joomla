@@ -8,8 +8,8 @@
             <option value="emergency">Khẩn Cấp</option>
         </param>
         <param name="created" type="calendar" default="" label="Ngày Tạo" description="DETAILCREATED" />
-        <param name="date_start" type="calendar" default="" label="Ngày Bắt Đầu" description="DATESTART" />
-        <param name="date_end" type="calendar" default="" label="Ngày Kết Thúc" description="DATEEND" />
+        <param name="date_start" type="calendar" default="" label="Ngày Bắt Đầu" description="DATESTART"  />
+        <param name="date_end" type="calendar" default="" label="Ngày Kết Thúc" description="DATEEND"  />
     </params>
     <params group="advanced">
 

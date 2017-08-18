@@ -17,6 +17,9 @@
             <td scope="row"><?php echo $u->username;?></td>
             <td><?php echo $u->groupname;?></td>
         </tr>
-    <?php endforeach; endif;?>
+    <?php endforeach; ?>
+    <?php else:?>
+        <tr><td colspan="4" class="text-center">Không có nhân viên nào</td></tr>
+    <?php endif;?>
     </tbody>
 </table>

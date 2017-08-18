@@ -268,14 +268,14 @@ class JobMgControllerPosition extends JController
 
         switch ($task)
         {
-            case 'groupapply' :
-                $msg = JText::sprintf('SUCCESSFULLY SAVED CHANGES TO Company', $row->title);
+            case 'apply' :
+                $msg = JText::sprintf('SUCCESSFULLY SAVED CHANGES TO Position', $row->title);
                 $mainframe->redirect("index.php?option=$option&c=position&task=edit&cid[]=".$row->id, $msg);
                 break;
 
-            case 'groupsave' :
+            case 'save' :
             default :
-                $msg = JText::sprintf('Successfully Saved Company', $row->title);
+                $msg = JText::sprintf('Successfully Saved Position', $row->title);
                 $mainframe->redirect("index.php?option=$option&c=position", $msg);
                 break;
         }

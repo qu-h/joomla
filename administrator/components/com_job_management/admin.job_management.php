@@ -22,6 +22,10 @@ if( !class_exists($controllerName) ){
 if( !class_exists("JHTMLJobMg") ){
     require_once( JPATH_COMPONENT.DS.'libraries'.DS.'jobMg.php' );
 }
+if( !class_exists("JHTMLJobForm") ){
+    require_once( JPATH_COMPONENT.DS.'libraries'.DS.'jobform.php' );
+}
+
 if( !class_exists("JHTMLJobManagement") ){
     require_once( JPATH_COMPONENT.DS.'helper'.DS.'job_management.php' );
 }

@@ -19,6 +19,18 @@ class JobMgControllerJob extends JController
 
     function display()
     {
+        $view = JRequest::getVar('view',null);
+        $app =& JFactory::getApplication();
+        if( !$app->isAdmin() ){
+            if( strlen($view) < 1 ){
+                $view = "jobs";
+                JRequest::setVar('view',$view);
+            }
+        }
+        if( strlen($view) > 0  && is_dir(JPATH_COMPONENT."/views/$view") ){
+            return parent::display();
+        }
+
         global $mainframe;
 
         // Initialize variables
@@ -257,11 +269,21 @@ class JobMgControllerJob extends JController
             return false;
         }
 
+        bug($row->date_start);
+        //$row->date_start	= date("Y-m-d H:i:s",strtotime($row->date_start));
+        $row->date_start = date("Y-m-d H:i:s",strtotime(str_replace('/','-',$row->date_start)));
+        $row->date_end	= date("Y-m-d H:i:s",strtotime(str_replace('/','-',$row->date_end)));
+
         // Store the content to the database
         if (!$row->store()) {
             JError::raiseError( 500, $db->stderr() );
             return false;
         }
+
+        if( !class_exists("JHTMLJobManagement") ){
+            require_once( JPATH_COMPONENT_ADMINISTRATOR.DS.'helper'.DS.'job_management.php' );
+        }
+
         JHTMLJobManagement::update_users_link("job",$row->id);
 
         $dispatcher->trigger('onAfterContentSave', array(&$row, $isNew));
@@ -283,9 +305,13 @@ class JobMgControllerJob extends JController
 
     private function form($edit)
     {
+
+        $view = JRequest::getVar('view',null);
+        if( strlen($view) > 0  && is_dir(JPATH_COMPONENT."/views/$view") ){
+            return parent::display();
+        }
+
         global $mainframe;
-
-
         // Initialize variables
         $db				= & JFactory::getDBO();
         $user			= & JFactory::getUser();
@@ -353,7 +379,7 @@ class JobMgControllerJob extends JController
 
 
         // Create the form
-        $form = new JParameter('', JPATH_COMPONENT.DS.'models'.DS.'job.xml');
+        $form = new JParameter('', JPATH_COMPONENT_ADMINISTRATOR.DS.'models'.DS.'job.xml');
 
         // Details Group
         $active = (intval($row->creator) ? intval($row->creator) : $user->get('id'));
@@ -379,10 +405,15 @@ class JobMgControllerJob extends JController
 
         JHTML::_('behavior.tooltip');
 
-        include_once JPATH_COMPONENT.DS.'views/job.php';
+        include_once JPATH_COMPONENT_ADMINISTRATOR.DS.'views/job.php';
     }
 
     function updateformval(){
+        $app =& JFactory::getApplication();
+        if( !$app->isAdmin() ){
+            return parent::display();
+        }
+
         $id				= JRequest::getVar( 'id', 0, '', 'int' );
         $option			= JRequest::getCmd( 'option' );
         $db		= & JFactory::getDBO();
@@ -410,6 +441,7 @@ class JobMgControllerJob extends JController
             }
 
         }
+
 
         jimport('joomla.html.pane');
         JFilterOutput::objectHTMLSafe( $row );
@@ -579,5 +611,9 @@ class JobMgControllerJob extends JController
 
         $msg = JText::sprintf('Thay đổi trạng thái công việc thành công', count($cid));
         $mainframe->redirect('index.php?option='.$option.'&c=job&task'.$return, $msg);
+    }
+
+    function login(){
+        include_once JPATH_COMPONENT.DS.'views/default_login.php';
     }
 }

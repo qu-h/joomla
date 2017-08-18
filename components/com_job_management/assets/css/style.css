@@ -53,6 +53,14 @@
     color: red;
 }
 
-.form-group {
-    font-size: 1rem;
+input.date,
+a.btn{
+    font-size: 12px;
+}
+.datepicker.dropdown-menu{
+    font-size: 12px;
+}
+
+.btn {
+    background-image: none;
 }

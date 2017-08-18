@@ -34,7 +34,7 @@ $colLeft = 3;
             <div class="form-group row">
                 <label class="col-<?php echo $colLeft*2 ?> col-form-label"><?php echo JText::_( 'Ngày Bắt Đầu' ); ?></label>
                 <div class="col-<?php echo 12-$colLeft*2 ?>">
-                    <p class="form-control-static"><?php echo JHTML::_('date',  $row->date_start, JText::_('DATE_FORMAT_LC4') ); ?></p>
+                    <p class="form-control-static"><?php echo JHTML::_('jobMg.DateFormat',  $row->date_start); ?></p>
                 </div>
             </div>
         </div>
@@ -42,7 +42,7 @@ $colLeft = 3;
             <div class="form-group row">
                 <label class="col-<?php echo $colLeft*2 ?> col-form-label"><?php echo JText::_( 'Ngày Kết Thúc' ); ?></label>
                 <div class="col-<?php echo 12-$colLeft*2 ?>">
-                    <p class="form-control-static"><?php echo JHTML::_('date',  $row->date_end, JText::_('DATE_FORMAT_LC4') ); ?></p>
+                    <p class="form-control-static"><?php echo JHTML::_('jobMg.DateFormat',  $row->date_end); ?></p>
                 </div>
             </div>
         </div>

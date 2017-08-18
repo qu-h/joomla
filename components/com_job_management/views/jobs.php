@@ -12,10 +12,36 @@ $now	=& JFactory::getDate();
 
 $ordering = ($lists['order'] == 'section_name' || $lists['order'] == 'cc.title' || $lists['order'] == 'c.ordering');
 
-
+$close_allow = JHTML::_('jobMg.isClose');
+$add_allow = JHTML::_('jobMg.isAdd');
+$add_allow = true;
 ?>
 <div class="clearfix"><div class="row">
-<form action="" method="post" name="adminForm">
+        <?php if ( $add_allow ): ?>
+            <div class="col-4">
+                <a class="btn btn-success text-white" href="<?php echo JRoute::_( 'index.php?option=com_job_management&task=add' ); ?>" >Thêm Công Việc</a>
+            </div>
+        <?php endif; ?>
+        <div class="col-4">
+            <div class="form-group row">
+                <label for="date-from" class="col-4 col-form-label">Từ ngày</label>
+                <div class="col-8 input-group">
+                    <input class="form-control date" type="text" value="" id="date-from" name="date_from">
+                    <div class="input-group-addon fa fa-calendar"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="form-group row">
+                <label for="date-to" class="col-4 col-form-label">Đến ngày</label>
+                <div class="col-8 input-group">
+                    <input class="form-control date" type="text" value="" id="date-to" name="date_to">
+                    <div class="input-group-addon fa fa-calendar"></div>
+                </div>
+            </div>
+        </div>
+
+<form action="" method="post" name="adminForm" class="col-12">
 
     <table class="table table-hover table-responsive" >
         <thead>
@@ -48,7 +74,9 @@ $ordering = ($lists['order'] == 'section_name' || $lists['order'] == 'cc.title' 
 
             <th width="1%" class="title">Quá hạn</th>
             <th width="1%" class="title">Đã xem</th>
+            <?php if ( $close_allow ): ?>
             <th>Đóng</th>
+            <?php endif; ?>
         </tr>
         </thead>
 
@@ -57,6 +85,7 @@ $ordering = ($lists['order'] == 'section_name' || $lists['order'] == 'cc.title' 
         $k = 0;
         $nullDate = $db->getNullDate();
         if( count( $rows ) > 0 ):
+
         for ($i=0, $n=count( $rows ); $i < $n; $i++)
         {
             $row = &$rows[$i];
@@ -81,11 +110,13 @@ $ordering = ($lists['order'] == 'section_name' || $lists['order'] == 'cc.title' 
                     </span>
                 </td>
                 <td align="center" nowrap="nowrap">
-                    <?php echo JHTML::_('date',  $row->date_start, JText::_('DATE_FORMAT_LC4') ); ?>
-                </td>
-                <td align="center" nowrap="nowrap" class="text-danger" >
                     <?php
-                    $date_end= JHTML::_('date',  $row->date_end, JText::_('DATE_FORMAT_LC4') );
+                    echo JHTML::_('jobMg.DateFormat',   $row->date_start);
+                    ?>
+                </td>
+                <td align="center" nowrap="nowrap" >
+                    <?php
+                    $date_end= JHTML::_('jobMg.DateFormat',  $row->date_end);
                     if( strtotime($row->date_end) < time()  ){
                         echo '<span class="txt-danger">'.$date_end.'</span>';
                     } else {
@@ -111,7 +142,9 @@ $ordering = ($lists['order'] == 'section_name' || $lists['order'] == 'cc.title' 
                         <i class="fa fa-eye-slash red"></i>
                     <?php endif; ?>
                 </td>
+                <?php if ( $close_allow ): ?>
                 <td align="center" class="userfront" ><?php echo JHTMLJobMg::JobClose($row,$i) ?></td>
+                <?php endif; ?>
             </tr>
             <?php
             $k = 1 - $k;

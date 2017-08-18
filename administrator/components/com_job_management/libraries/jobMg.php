@@ -37,23 +37,39 @@ class JHTMLJobMg extends  JHTML{
     }
 
     function CompanySelelect($selected=null,$name="company",$submit=false){
-        $query = 'SELECT c.id, c.name' .
-            ' FROM #__jobmanagement_company AS c'
-            .' WHERE c.status=1'
-            .' GROUP BY c.id ORDER BY c.name, c.id';
-        $companys[] = JHTML::_('select.option', '0', '- '.JText::_('Select Company').' -', 'id', 'name');
+
+
         $db	    = & JFactory::getDBO();
+        $where = array("c.status=1");
+        $app =& JFactory::getApplication();
+        if( !$app->isAdmin() )
+        {
+            $user		= & JFactory::getUser();
+            $company_ids = self::UidMapGroupIds("company",$user->get('id'));
+            if( !empty($company_ids)  ){
+                $where[]= "c.id IN (".implode(",",$company_ids).")";
+            } else {
+                $where[]= "c.id < 1";
+            }
+        }
+        $query = 'SELECT c.id, c.name FROM #__jobmanagement_company AS c';
+        $query .= (count($where) ? ' WHERE '.implode(' AND ', $where) : '');
+        $query .= ' GROUP BY c.id ORDER BY c.name, c.id';
         $db->setQuery($query);
         if (!$db->query())
         {
             JError::raiseError( 500, $db->getErrorMsg() );
             return false;
         }
+
+        $companys = array();
+        $companys[] = JHTML::_('select.option', '0', '- '.JText::_('Chọn Công Ty').' -', 'id', 'name');
+
         $companys = array_merge($companys, $db->loadObjectList());
 
         $javascript = $submit ? 'onchange="javascript: submitbutton(\'updateformval\');"' : NULL;
 
-        return JHTML::_('select.genericlist',  $companys, $name, 'class="form-control custom-select" size="1" '.$javascript, 'id', 'name', $selected);
+        return JHTML::_('select.genericlist',  $companys, $name, 'class="form-control custom-select" size="1" '.$javascript, 'id', 'name', intval($selected));
 
     }
 
@@ -88,6 +104,10 @@ class JHTMLJobMg extends  JHTML{
             $selected_id = $job_object->groupid;
             $query .= " AND g.company = ".$job_object->companyid;
         }
+        /*
+         * update for list users in group
+         */
+
 
         $query .= ' ORDER BY g.title';
 
@@ -99,6 +119,11 @@ class JHTMLJobMg extends  JHTML{
             $name = "groupid";
         }
 
+        $group_ids = array_map(function ($object) { return $object->id; }, $groups);
+        if( !in_array($selected_id,$group_ids) ){
+            $selected_id = -1;
+        }
+        JRequest::setVar( $name, $selected_id );
         $javascript = $submit ? 'onchange="javascript: submitbutton(\'updateformval\');"' : NULL;
         return JHTML::_('select.genericlist',  $groups, $name, 'class="form-control custom-select" size="1" '.$javascript, 'id', 'title', intval($selected_id));
     }
@@ -143,6 +168,7 @@ class JHTMLJobMg extends  JHTML{
             $query .= " WHERE u.id IN (".implode(",", $ids).")";
         }
         $query .= " GROUP BY u.id ORDER BY u.name, u.id";
+
         $db->setQuery($query);
         $users = $db->loadObjectList();
 
@@ -162,7 +188,7 @@ class JHTMLJobMg extends  JHTML{
             }
         }
 
-        include_once JPATH_BASE.DS.'components/com_job_management/views/ui/SelectMultiUsers.php';
+        include_once JPATH_COMPONENT_ADMINISTRATOR.'/views/ui/SelectMultiUsers.php';
     }
 
     static function UidMapUids($group="job",$group_id=0){
@@ -378,9 +404,11 @@ class JHTMLJobMg extends  JHTML{
 
     static $roles = array(
         "add"=>array("Thêm Mới Công Việc","success"),
+        "edit"=>array("Sửa Công Việc","success"),
         "close"=>array("Đóng Công Việc","warning"),
         "remove"=>array("Xóa Công Việc","danger"),
-        "viewall"=>array("Xem toàn bộ Công Việc","success")
+        "viewall"=>array("Xem toàn bộ Công Việc","success"),
+        "viewgroup"=>array("Xem Công Việc trong nhóm","success")
     );
     function Permission($inputname="role",$position_id=0){
         echo '<div class="row">';
@@ -444,20 +472,44 @@ class JHTMLJobMg extends  JHTML{
             $items[] = $r->role;
         }
         self::$current_role = $items;
-        //return $items;
     }
 
+    static function isAllow($role="add",$roles=array()){
+        if( empty($roles) ){
+            if( empty(self::$current_role) ){
+                self::LoadRole();
+            }
+            $roles = self::$current_role;
+        }
+        return in_array($role,$roles);
+    }
     static function isViewAll(){
-        return in_array("viewall",self::$current_role);
+        return self::isAllow("viewall");
     }
 
+    static function isViewGroup(){
+        return self::isAllow("viewgroup");
+    }
     static function isClose(){
-        return in_array("close",self::$current_role);
+        return self::isAllow("close");
     }
     static function isRemove(){
-        return in_array("remove",self::$current_role);
+        return self::isAllow("remove");
     }
     static function isAdd(){
-        return in_array("add",self::$current_role);
+        return self::isAllow("add");
     }
+
+    static function DateFormat($datestring="",$checkdate = true, $format_return = 'd/m/Y H:i'){
+        $format = 'Y-m-d H:i:s';
+        $d = DateTime::createFromFormat($format, $datestring);
+
+        if( ($d && $d->format($format) == $datestring ) OR $checkdate != true ){
+
+            return date($format_return,strtotime($datestring));
+        }
+
+        return NULL;
+    }
+
 }

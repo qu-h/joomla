@@ -105,7 +105,7 @@ $controllerName = JRequest::getCmd( 'c', 'job' );
             </td>
             <td valign="top" width="320">
                 <?php
-                JobManagementView::_displayArticleStats($row, $lists);
+                //JobManagementView::_displayArticleStats($row, $lists);
 
                 echo $pane->startPane("content-pane");
 
@@ -120,12 +120,11 @@ $controllerName = JRequest::getCmd( 'c', 'job' );
     </table>
 
     <input type="hidden" name="id" value="<?php echo $row->id; ?>" />
-    <input type="hidden" name="cid[]" value="<?php echo $row->id; ?>" />
-    <input type="hidden" name="version" value="<?php echo $row->version; ?>" />
+    <input type="hidden" name="cid[]" value="0" />
     <input type="hidden" name="mask" value="0" />
-    <input type="hidden" name="option" value="<?php echo $option;?>" />
+    <input type="hidden" name="option" value="<?php echo JRequest::getCmd( 'option' );?>" />
     <input type="hidden" name="task" value="" />
-    <input type="hidden" name="c" value="<?php echo $controllerName; ?>" />
+    <input type="hidden" name="c" value="job" />
     <?php echo JHTML::_( 'form.token' ); ?>
 </form>
 <?php

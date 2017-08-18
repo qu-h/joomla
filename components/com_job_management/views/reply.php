@@ -24,8 +24,8 @@ $editor = &JFactory::getEditor();
         </div>
         <div class="col-md-12">
             <div class="form-group">
-                <label><?php echo JText::_( 'Content' ); ?></label>
-                <?php echo $editor->display( 'content',  NULL , '100%', '150') ; ?>
+                <label><?php echo JText::_( 'Nội dung' ); ?></label>
+                <textarea name="content" class="form-control" ></textarea>
             </div>
         </div>
 
