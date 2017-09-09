@@ -1,5 +1,5 @@
 <?php
-$colLeft = 3;
+$colLeft = 2;
 ?>
 <div class="clearfix p-3">
     <div class="row">
@@ -12,15 +12,15 @@ $colLeft = 3;
         </div>
     </div>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-3">
             <div class="form-group row">
-                <label class="col-<?php echo $colLeft*2 ?> col-form-label"><?php echo JText::_( 'Nhóm công việc' ); ?></label>
-                <div class="col-<?php echo 12-$colLeft*2 ?>">
+                <label class="col-7 col-form-label"><?php echo JText::_( 'Nhóm công việc' ); ?></label>
+                <div class="col-5">
                     <p class="form-control-static"><?php echo $row->group_name ?></p>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-3">
             <div class="form-group row">
                 <label class="col-<?php echo $colLeft*2 ?> col-form-label"><?php echo JText::_( 'Cấp độ' ); ?></label>
                 <div class="col-<?php echo 12-$colLeft*2 ?>">
@@ -28,20 +28,18 @@ $colLeft = 3;
                 </div>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-3">
             <div class="form-group row">
-                <label class="col-<?php echo $colLeft*2 ?> col-form-label"><?php echo JText::_( 'Ngày Bắt Đầu' ); ?></label>
-                <div class="col-<?php echo 12-$colLeft*2 ?>">
+                <label class="col-6 col-form-label"><?php echo JText::_( 'Ngày Bắt Đầu' ); ?></label>
+                <div class="col-6">
                     <p class="form-control-static"><?php echo JHTML::_('jobMg.DateFormat',  $row->date_start); ?></p>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-3">
             <div class="form-group row">
-                <label class="col-<?php echo $colLeft*2 ?> col-form-label"><?php echo JText::_( 'Ngày Kết Thúc' ); ?></label>
-                <div class="col-<?php echo 12-$colLeft*2 ?>">
+                <label class="col-6 col-form-label"><?php echo JText::_( 'Ngày Kết Thúc' ); ?></label>
+                <div class="col-6">
                     <p class="form-control-static"><?php echo JHTML::_('jobMg.DateFormat',  $row->date_end); ?></p>
                 </div>
             </div>
@@ -54,8 +52,10 @@ $colLeft = 3;
         </div>
     </div>
     <div class="form-group row">
-        <label class="col-<?php echo $colLeft ?> col-form-label"><?php echo JText::_( 'Người tham gia' ); ?></label>
-        <div class="col-<?php echo 12-$colLeft ?>">
+        <label class="col-2 col-form-label"><?php echo JText::_( 'Người giao' ); ?></label>
+        <div class="col-3"><p class="form-control-static"><?php echo JHTMLJobMg::GetUserDetail($row->creator) ?></p></div>
+        <label class="col-2 col-form-label"><?php echo JText::_( 'Người tham gia' ); ?></label>
+        <div class="col-4">
             <p class="form-control-static userfront">
                 <?php
                 $uids = JHTMLJobMg::UidMapUids("job",$row->id);

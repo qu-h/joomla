@@ -130,8 +130,9 @@ class JobMgControllerReply extends JController
 
         $config =& JFactory::getConfig();
         $tzoffset = $config->getValue('config.offset');
-        $date =& JFactory::getDate($row->created, $tzoffset);
-        $row->created = $date->toMySQL();
+        //$date =& JFactory::getDate($row->created, $tzoffset);
+        date_default_timezone_set('Asia/Ho_Chi_Minh');
+        $row->created = date("Y-m-d H:i:s");
 
         $row->job_id	= JRequest::getVar( 'jid', 0, '', 'int' );
 
@@ -148,7 +149,6 @@ class JobMgControllerReply extends JController
             JError::raiseError(500, $row->getError());
             return false;
         }
-
         // Store the content to the database
         if (!$row->store()) {
             JError::raiseError( 500, $db->stderr() );

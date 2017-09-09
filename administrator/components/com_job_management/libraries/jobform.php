@@ -11,7 +11,10 @@ class JHTMLJobForm extends  JHTML
     }
 
     static function inputdate($name="date_val",$label="Date",$value="",$inline=0,$taskUpdate=null){
-        $value = date("d/m/Y",strtotime($value));
+        if( strlen($value) > 0 ){
+            $value = date("d/m/Y",strtotime($value));
+        }
+
         include JPATH_COMPONENT_ADMINISTRATOR.'/views/ui/date.php';
     }
 

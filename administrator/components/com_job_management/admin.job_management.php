@@ -1,6 +1,6 @@
 <?php
 defined('_JEXEC') or die('Restricted access');
-
+date_default_timezone_set('Asia/Ho_Chi_Minh');
 require_once( JPATH_COMPONENT.DS.'controller.php' );
 require_once( JPATH_COMPONENT.DS.'helper.php' );
 require_once (JApplicationHelper::getPath('admin_html'));

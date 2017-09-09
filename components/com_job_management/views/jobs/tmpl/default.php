@@ -67,6 +67,11 @@ $add_allow = JHTML::_('jobMg.isAdd');
                 <tbody>
                 <?php
                 if( isset($this->jobs) AND !empty($this->jobs) ): foreach ($this->jobs AS $i=>$row) :
+                    $is_over_time = ( strtotime($row->date_end) < time()   ) ? true : false;
+                    if ( $row->status == -1 && strtotime($row->date_end) >= strtotime($row->modified)  ){
+                        $is_over_time = false;
+                    }
+
                 ?>
                         <tr class="<?php echo "row".($i); ?>">
                             <td style="display: none"><?php echo JHTML::_('grid.checkedout',   $row, $i );?></td>
@@ -94,7 +99,7 @@ $add_allow = JHTML::_('jobMg.isAdd');
                             <td align="center" nowrap="nowrap" >
                                 <?php
                                 $date_end= JHTML::_('jobMg.DateFormat',  $row->date_end);
-                                if( strtotime($row->date_end) < time()  ){
+                                if( $is_over_time ){
                                     echo '<span class="txt-danger">'.$date_end.'</span>';
                                 } else {
                                     echo $date_end;
@@ -106,7 +111,7 @@ $add_allow = JHTML::_('jobMg.isAdd');
                             <td><?php echo $row->section_name; ?></td>
 
                             <td class="userfront">
-                                <?php if( strtotime($row->date_end) < time() && $row->status !=-1 ):?>
+                                <?php if( $is_over_time ):?>
                                     <i class="fa fa-ban red "></i>
                                 <?php else : ?>
                                     <i class="fa fa-check"></i>

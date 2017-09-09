@@ -36,10 +36,10 @@
         </div>
 
         <div class="col-md-6">
-            <?php echo JHTML::_('JobForm.datetime', "date_start",'Bắt Đầu',$this->job->date_start); ?>
+            <?php echo JHTML::_('JobForm.inputdate', "date_start",'Bắt Đầu',$this->job->date_start); ?>
         </div>
         <div class="col-md-6">
-            <?php echo JHTML::_('JobForm.datetime', "date_end",'Kết Thúc',$this->job->date_end); ?>
+            <?php echo JHTML::_('JobForm.inputdate', "date_end",'Kết Thúc',$this->job->date_end); ?>
         </div>
         <div class="col-md-6">
             <?php echo JHTML::_('JobForm.level', "level",'Mức Độ',$this->job->level); ?>

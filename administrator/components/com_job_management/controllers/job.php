@@ -269,7 +269,7 @@ class JobMgControllerJob extends JController
             return false;
         }
 
-        bug($row->date_start);
+
         //$row->date_start	= date("Y-m-d H:i:s",strtotime($row->date_start));
         $row->date_start = date("Y-m-d H:i:s",strtotime(str_replace('/','-',$row->date_start)));
         $row->date_end	= date("Y-m-d H:i:s",strtotime(str_replace('/','-',$row->date_end)));
@@ -460,7 +460,9 @@ class JobMgControllerJob extends JController
 
         $db				= & JFactory::getDBO();
         $id				= JRequest::getVar( 'jid', 0, '', 'int' );
-
+        if( $id < 1 ){
+            $mainframe->redirect('index.php?option=com_job_management&view=jobs');
+        }
         $query = 'SELECT j.*, g.title AS group_name, v.name AS author' .
             ' FROM #__jobmanagement_job AS j' .
             ' LEFT JOIN #__jobmanagement_group AS g ON g.id = j.groupid' .
@@ -476,7 +478,7 @@ class JobMgControllerJob extends JController
         if ($id AND $row->status < 0 AND $this->frontend != true ) {
             $mainframe->redirect('index.php?option='.$this->com, JText::_('You cannot edit an archived item'));
         }
-        if( $row->viewed < 1 ){
+        if( $row->viewed < 1  ){
             $db->setQuery('UPDATE #__jobmanagement_job SET viewed = 1 WHERE id='.$row->id);
             if (!$db->query())
             {
@@ -596,9 +598,12 @@ class JobMgControllerJob extends JController
         $state		= $status;
         $cids = implode(',', $cid);
 
+        $datenow =& JFactory::getDate();
+        $user		= & JFactory::getUser();
+
         $query = 'UPDATE #__jobmanagement_job' .
-            ' SET status = '.(int) $state .
-            ' WHERE id IN ( '. $cids. ' )';
+            " SET status = ".(int) $state . " ,modified= '".$datenow->toMySQL()."' ,modifier=".$user->get('id')
+            .' WHERE id IN ( '. $cids. ' )';
         $db->setQuery($query);
         if (!$db->query())
         {

@@ -107,7 +107,10 @@ class JHTMLJobMg extends  JHTML{
         /*
          * update for list users in group
          */
-
+        $group_uids_assigned = self::UidMapGroupIds("group");
+        if( !empty($group_uids_assigned) ){
+            $query .= " AND g.id IN (".implode(",",$group_uids_assigned).")";
+        }
 
         $query .= ' ORDER BY g.title';
 
@@ -118,6 +121,11 @@ class JHTMLJobMg extends  JHTML{
         if( is_null($name) ){
             $name = "groupid";
         }
+
+
+
+
+
 
         $group_ids = array_map(function ($object) { return $object->id; }, $groups);
         if( !in_array($selected_id,$group_ids) ){
@@ -150,11 +158,16 @@ class JHTMLJobMg extends  JHTML{
                     break;
 
             }
-            if( $group != null ){
+            $companyid = JRequest::getVar( 'companyid', 0, '', 'int' );
+            if( $group != null && $groupid > 0 ){
                 $ids = self::UidMapUids($group,$groupid);
                 if( empty($ids) ){
                     $ids[] = 0;
                 }
+            } else if( $companyid > 0 && self::isViewAll() ){
+                $ids = self::UidMapUids("company",$companyid);
+            } else {
+                $ids[] = 0;
             }
 
         }
@@ -212,6 +225,10 @@ class JHTMLJobMg extends  JHTML{
         $db	    = & JFactory::getDBO();
         $UidMapTable = & JTable::getInstance('JobsUidMap');
 
+        if( $uid < 1){
+            $user	=& JFactory::getUser();
+            $uid = $user->get('id');
+        }
         $group_uid_query = "SELECT group_id FROM ".$UidMapTable->_tbl." WHERE `group`='$group' AND `uid` = $uid";
 
         $db->setQuery($group_uid_query);
@@ -220,7 +237,12 @@ class JHTMLJobMg extends  JHTML{
             JError::raiseError( 500, $db->getErrorMsg() );
             return false;
         }
+        if( $db->loadResult() < 1 ){
+            return array();
+        }
+
         $group_ids = array_map(function ($object) { return $object->group_id; }, $db->loadObjectList());
+
         return $group_ids;
     }
 
@@ -500,7 +522,7 @@ class JHTMLJobMg extends  JHTML{
         return self::isAllow("add");
     }
 
-    static function DateFormat($datestring="",$checkdate = true, $format_return = 'd/m/Y H:i'){
+    static function DateFormat($datestring="",$checkdate = true, $format_return = 'd/m/Y'){
         $format = 'Y-m-d H:i:s';
         $d = DateTime::createFromFormat($format, $datestring);
 

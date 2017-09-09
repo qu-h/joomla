@@ -27,7 +27,7 @@ $replys = $db->loadObjectList();
                     </a>
                 <?php endif;?>
             </td>
-            <td class="text-center"><?php echo JHTML::_('date',  $r->created, JText::_('DATE_FORMAT_LC4') ); ?></td>
+            <td class="text-center"><?php echo JHTML::_('JobMg.DateFormat',  $r->created, true ,'d/m/Y h:i'); ?></td>
             <td><?php echo JHTMLJobMg::GetUserDetail($r->creator) ?></td>
             <td><?php echo $r->title ?></td>
             <td><?php echo $r->content ?></td>

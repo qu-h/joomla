@@ -29,5 +29,18 @@ $(document).ready(function () {
         minView: 2,
         forceParse: 1
     });
+
+
+    var modal = '<div class="modal fade in" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block; padding-right: 17px;">\n' +
+      '<div class="loader"></div>'+
+        '</div>'+
+        '<div class="modal-backdrop fade show"></div>'
+    ;
+
+    $('form').submit(function() {
+        //$("body").addClass("modal-open").append(modal);
+        $("body").append(modal);
+    });
+
 });
 

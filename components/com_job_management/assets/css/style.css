@@ -64,3 +64,34 @@ a.btn{
 .btn {
     background-image: none;
 }
+
+.col-form-label{
+    line-height: 2;
+}
+.form-group {
+    margin-bottom: 5px;
+}
+.form-control-static {
+    margin: 0 !important;
+    line-height: 2.2;
+}
+.loader {
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #006699;
+    border-bottom: 16px solid #006699;
+
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+    margin: 100px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.modal-backdrop.show {
+    opacity: 0.5;
+}
