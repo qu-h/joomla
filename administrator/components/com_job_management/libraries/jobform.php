@@ -11,9 +11,12 @@ class JHTMLJobForm extends  JHTML
     }
 
     static function inputdate($name="date_val",$label="Date",$value="",$inline=0,$taskUpdate=null){
+        $value_format = $value;
         if( strlen($value) > 0 ){
+            $value_format = date("Y-m-d",strtotime($value));
             $value = date("d/m/Y",strtotime($value));
         }
+
 
         include JPATH_COMPONENT_ADMINISTRATOR.'/views/ui/date.php';
     }
@@ -71,7 +74,7 @@ class JHTMLJobForm extends  JHTML
             if (count($company_ids) > 0) {
                 $where[] = "(g.company IN (" . implode(",", $company_ids) . ") OR j.creator=$uid)";
             }
-        }else if ( JHTMLJobMg::isViewGroup() == true ){
+        } else if ( JHTMLJobMg::isViewGroup() == true ){
             $group_ids = JHTMLJobMg::UidMapGroupIds("group",$uid);
 
             if (count($group_ids) > 0) {
@@ -102,4 +105,24 @@ class JHTMLJobForm extends  JHTML
 
     }
 
+    static function companys($name="company_id",$label="Company",$value="",$inline=0,$taskUpdate=true){
+        $input_html = JHTMLJobMg::companySelect($value,$taskUpdate,$name,false);
+        include JPATH_COMPONENT_ADMINISTRATOR.'/views/ui/formgroup.php';
+    }
+
+    static function groups($name="group_id",$label="Group",$value="",$inline=0,$taskUpdate=true){
+        $input_html = JHTMLJobMg::groupSelect($value,$taskUpdate,$name,false);
+        include JPATH_COMPONENT_ADMINISTRATOR.'/views/ui/formgroup.php';
+    }
+
+    static function jobStatus($name="group_id",$label="Group",$value="",$inline=0,$taskUpdate=null){
+        $options[] = JHTML::_('select.option', '', JText::_( '-- Trạng thái --' ), 'id', 'title');
+        $options[] = JHTML::_('select.option', 'finished', JText::_( 'Hoàn thành' ), 'id', 'title');
+        $options[] = JHTML::_('select.option', 'late', JText::_( 'Hoàn thành trễ' ), 'id', 'title');
+        $options[] = JHTML::_('select.option', 'not_finished', JText::_( 'Chưa hoàn thành' ), 'id', 'title');
+
+        $onchange = $taskUpdate ? ' onchange="javascript: submitbutton(\'updateformval\');" ' : null;
+        $input_html = JHTML::_('select.genericlist',  $options, $name, 'class="form-control custom-select" size="1" '.$onchange, 'id', 'title', $value);
+        include JPATH_COMPONENT_ADMINISTRATOR.'/views/ui/formgroup.php';
+    }
 }

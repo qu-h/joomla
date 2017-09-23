@@ -45,9 +45,9 @@ class JobMgControllerJob extends JController
         $filter_order		= $mainframe->getUserStateFromRequest( $context.'filter_order',		'filter_order',		'',	'cmd' );
         $filter_order_Dir	= $mainframe->getUserStateFromRequest( $context.'filter_order_Dir',	'filter_order_Dir',	'',	'word' );
         $filter_state		= $mainframe->getUserStateFromRequest( $context.'filter_state',		'filter_state',		'',	'word' );
-        $catid				= $mainframe->getUserStateFromRequest( $context.'catid',			'catid',			0,	'int' );
+        $filter_companyid	= $mainframe->getUserStateFromRequest( $context.'companyid','filter_companyid',	0,	'int' );
         $filter_authorid	= $mainframe->getUserStateFromRequest( $context.'filter_authorid',	'filter_authorid',	0,	'int' );
-        //$filter_sectionid	= $mainframe->getUserStateFromRequest( $context.'filter_sectionid',	'filter_sectionid',	-1,	'int' );
+
         $filter_groupid	= $mainframe->getUserStateFromRequest( $context.'filter_groupid',	'filter_groupid',	-1,	'int' );
         $search				= $mainframe->getUserStateFromRequest( $context.'search',			'search',			'',	'string' );
         if (strpos($search, '"') !== false) {
@@ -61,17 +61,16 @@ class JobMgControllerJob extends JController
         // In case limit has been changed, adjust limitstart accordingly
         $limitstart = ( $limit != 0 ? (floor($limitstart / $limit) * $limit) : 0 );
 
-
 //        $where[] = 'j.status != -2';
 
-
+        $order = "";
         if ($filter_order == 'c.ordering') {
             $order = ' ORDER BY g.title';
         }
 
-        /*
-         * Add the filter specific information to the where clause
-         */
+        if ($filter_companyid >= 0) {
+            $where[] = 'j.companyid = ' . (int) $filter_companyid;
+        }
 
         if ($filter_groupid >= 0) {
             $where[] = 'j.groupid = ' . (int) $filter_groupid;
@@ -162,7 +161,6 @@ class JobMgControllerJob extends JController
         // Create the pagination object
         jimport('joomla.html.pagination');
         $pagination = new JPagination($total, $limitstart, $limit);
-
         $db->setQuery($query, $pagination->limitstart, $pagination->limit);
 
 
@@ -176,7 +174,9 @@ class JobMgControllerJob extends JController
 
         $lists['authorid'] = JHTMLJobMg::AuthorSelect("filter_authorid",$filter_authorid);
         $lists['status'] = JHTML::_('grid.state', $filter_state, 'Published', 'Unpublished');
-        $lists['groupid'] = JHTMLJobMg::groupSelect($filter_groupid,true,"filter_groupid");
+
+        $lists['companyid'] = JHTMLJobMg::companySelect($filter_companyid,true,"filter_companyid",true);
+        $lists['groupid'] = JHTMLJobMg::groupSelect($filter_groupid,true,"filter_groupid",true);
         $lists['order_Dir']	= $filter_order_Dir;
         $lists['order']		= $filter_order;
 
@@ -273,6 +273,67 @@ class JobMgControllerJob extends JController
         //$row->date_start	= date("Y-m-d H:i:s",strtotime($row->date_start));
         $row->date_start = date("Y-m-d H:i:s",strtotime(str_replace('/','-',$row->date_start)));
         $row->date_end	= date("Y-m-d H:i:s",strtotime(str_replace('/','-',$row->date_end)));
+
+        jimport('joomla.filesystem.file');
+        jimport('joomla.filesystem.folder');
+        $fieldName = 'file';
+
+
+        $files = [];
+
+        foreach ($_FILES[$fieldName]['name'] AS $k => $f){
+            $fileError = $_FILES[$fieldName]["error"][$k];
+            $error = NULL;
+            if( $fileError != 4 ){
+                if ($fileError > 0)
+                {
+                    switch ($fileError)
+                    {
+                        case 1:
+                            $error =  JText::_( 'FILE TO LARGE THAN PHP INI ALLOWS' ); break;
+                        case 2:
+                            $error =  JText::_( 'FILE TO LARGE THAN HTML FORM ALLOWS' ); break;
+                        case 3:
+                            $error =  JText::_( 'ERROR PARTIAL UPLOAD' ); break;
+                        case 4:
+                            $error = JText::_( 'ERROR NO FILE' ); break;
+                    }
+                }
+                $fileSize = $_FILES[$fieldName]['size'][$k];
+
+                if($fileSize > 2000000)
+                {
+                    $error = JText::_( 'FILE BIGGER THAN 2MB' );
+                }
+
+                $fileName = $_FILES[$fieldName]['name'][$k];
+                $fileInfo = pathinfo($fileName);
+
+                $fileName = preg_replace("/[^A-Za-z0-9]/i", "-", $fileInfo['filename'])
+                            ."-".date('Ymd-hi')
+                            .".".$fileInfo['extension'];
+
+                //always use constants when making file paths, to avoid the possibilty of remote file inclusion
+                $uploadPath = JPATH_SITE.DS.'upload'.DS.'job_management'.DS;
+                if (!is_dir($uploadPath)) {
+                    mkdir($uploadPath, 0777, true);
+                }
+
+                $uploadPath .= $fileName;
+                $fileTemp = $_FILES[$fieldName]['tmp_name'][$k];
+
+                if(JFile::upload($fileTemp, $uploadPath))
+                {
+                    $files[] = $fileName;
+                }
+            }
+        }
+
+        if( !empty($files) ){
+            $row->files .= implode(',',$files);
+        }
+
+        $row->content = str_replace("\n",'<br>',$row->content);
 
         // Store the content to the database
         if (!$row->store()) {
@@ -487,7 +548,6 @@ class JobMgControllerJob extends JController
             }
         }
 
-        
         include_once JPATH_COMPONENT.DS.'views/job_view.php';
 
         $id = $row->id;

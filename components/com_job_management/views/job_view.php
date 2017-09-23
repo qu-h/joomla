@@ -60,10 +60,32 @@ $colLeft = 2;
                 <?php
                 $uids = JHTMLJobMg::UidMapUids("job",$row->id);
                 if( isset($uids) && !empty($uids) ):  foreach ($uids AS $uid):?>
-                    <span class="fa fa-user" title="<?php echo JHTMLJobMg::GetUserDetail($uid) ?>"></span>
+                    <span class="fa fa-user" title="<?php echo JHTMLJobMg::GetUserDetail($uid) ?>"
+                     
+
+                    ></span>
                     <?php endforeach;?>
                 <?php else :?>
                     Không có người nào
+                <?php endif;?>
+            </p>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-2 col-form-label"><?php echo JText::_( 'File đính kèm' ); ?></label>
+        <div class="col-10">
+            <p class="form-control-static userfront">
+                <?php
+                $files = explode(",",$row->files);
+                $uploadPath = 'upload'.DS.'job_management'.DS;
+                if( isset($files) && !empty($files) ):  foreach ($files AS $f):
+                    if( strlen($f) < 3 ) continue;
+                    ?>
+                    <a href="/<?=$uploadPath.$f;?>" target="_blank"><i class="fa fa-file-text-o" ></i></a>
+                <?php endforeach;?>
+                <?php else :?>
+                    Không có file nào
                 <?php endif;?>
             </p>
         </div>

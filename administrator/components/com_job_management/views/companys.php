@@ -10,7 +10,7 @@ $user	=& JFactory::getUser();
 $config	=& JFactory::getConfig();
 $now	=& JFactory::getDate();
 
-$ordering = ($lists['order'] == 'section_name' || $lists['order'] == 'cc.title' || $lists['order'] == 'c.ordering');
+//$ordering = ($lists['order'] == 'section_name' || $lists['order'] == 'cc.title' || $lists['order'] == 'c.ordering');
 JHTML::_('behavior.tooltip');
 
 $controllerName = JRequest::getCmd( 'c', 'job' );
@@ -78,7 +78,7 @@ $controllerName = JRequest::getCmd( 'c', 'job' );
             $row = &$rows[$i];
 
             $link 	= 'index.php?option=com_job_management&c=company&task=edit&cid[]='. $row->id;
-
+            $row->checked_out = false;
             $checked 	= JHTML::_('grid.checkedout',   $row, $i );
             $row->published = $row->status ==1;
             ?>
@@ -93,7 +93,7 @@ $controllerName = JRequest::getCmd( 'c', 'job' );
                     <?php
                     if (  JTable::isCheckedOut($user->get ('id'), $row->checked_out ) ) {
                         echo $row->title;
-                    } else if ($row->state == -1) {
+                    } else if ($row->status == -1) {
                         echo htmlspecialchars($row->name, ENT_QUOTES, 'UTF-8');
                         echo ' [ '. JText::_( 'Archived' ) .' ]';
                     } else {

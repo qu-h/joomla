@@ -10,7 +10,7 @@ $user	=& JFactory::getUser();
 $config	=& JFactory::getConfig();
 $now	=& JFactory::getDate();
 
-$ordering = ($lists['order'] == 'section_name' || $lists['order'] == 'cc.title' || $lists['order'] == 'c.ordering');
+//$ordering = ($lists['order'] == 'section_name' || $lists['order'] == 'cc.title' || $lists['order'] == 'c.ordering');
 JHTML::_('behavior.tooltip');
 
 
@@ -80,9 +80,10 @@ JHTML::_('behavior.tooltip');
             $row = &$rows[$i];
 
             $link 	= 'index.php?option=com_job_management&c=group&task=edit&cid[]='. $row->id;
-
+            $row->checked_out = false;
             $checked 	= JHTML::_('grid.checkedout',   $row, $i );
             $row->published = $row->status ==1;
+
             ?>
             <tr class="<?php echo "row$k"; ?>">
                 <td>
@@ -93,7 +94,7 @@ JHTML::_('behavior.tooltip');
                 </td>
                 <td>
                     <?php
-                    if ($row->state == -1) {
+                    if ($row->status == -1) {
                         echo htmlspecialchars($row->title, ENT_QUOTES, 'UTF-8');
                         echo ' [ '. JText::_( 'Archived' ) .' ]';
                     } else {
@@ -106,7 +107,7 @@ JHTML::_('behavior.tooltip');
                 </td>
                 <td>
                     <?php
-                    if ($row->state == -1) {
+                    if ($row->status == -1) {
                         echo htmlspecialchars($row->company_name, ENT_QUOTES, 'UTF-8');
                         echo ' [ '. JText::_( 'Archived' ) .' ]';
                     } else {

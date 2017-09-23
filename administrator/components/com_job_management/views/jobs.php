@@ -13,9 +13,8 @@ $now	=& JFactory::getDate();
 $ordering = ($lists['order'] == 'section_name' || $lists['order'] == 'cc.title' || $lists['order'] == 'c.ordering');
 JHTML::_('behavior.tooltip');
 JHTML::stylesheet("css/font-awesome.min.css","components/com_job_management/assets/");
-
 ?>
-<form action="" method="post" name="adminForm">
+<form action="" method="post" name="adminForm" >
 
     <table>
         <tr>
@@ -27,6 +26,7 @@ JHTML::stylesheet("css/font-awesome.min.css","components/com_job_management/asse
             </td>
             <td nowrap="nowrap">
                 <?php
+                echo $lists['companyid'];
                 echo $lists['groupid'];
                 echo $lists['authorid'];
                 echo $lists['status'];
@@ -96,6 +96,7 @@ JHTML::stylesheet("css/font-awesome.min.css","components/com_job_management/asse
         {
             $row = &$rows[$i];
             $row->published = $row->status ==1;
+            $row->checked_out = false;
             ?>
             <tr class="<?php echo "row$k"; ?>">
                 <td><?php echo $page->getRowOffset( $i ); ?></td>

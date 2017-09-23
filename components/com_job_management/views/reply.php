@@ -14,7 +14,6 @@ $editor = &JFactory::getEditor();
             </div>
         </div>
 
-
         <div class="col-md-12">
             <div class="form-group">
                 <label><?php echo JText::_( 'File đính kèm (nếu có)' ); ?></label>

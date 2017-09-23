@@ -118,10 +118,10 @@ class JobMgControllerGroup extends JController
         include_once JPATH_COMPONENT.DS.'views/groups.php';
     }
 
-
     function edit(){
         return self::form(true);
     }
+
     private function form($edit)
     {
         global $mainframe;
@@ -144,11 +144,8 @@ class JobMgControllerGroup extends JController
         if($edit)
             $row->load($id);
 
-        if ($id) {
-            $sectionid = $row->sectionid;
-            if ($row->status < 0) {
-                $mainframe->redirect('index.php?option='.$this->com, JText::_('You cannot edit an Job Group item'));
-            }
+        if ($id && $row->status < 0) {
+            $mainframe->redirect('index.php?option='.$this->com, JText::_('You cannot edit an Job Group item'));
         }
 
 
@@ -156,17 +153,17 @@ class JobMgControllerGroup extends JController
         {
             $query = 'SELECT name' .
                 ' FROM #__users'.
-                ' WHERE id = '. (int) $row->created_by;
+                ' WHERE id = '. (int) $row->creator;
             $db->setQuery($query);
             $row->creator = $db->loadResult();
 
             // test to reduce unneeded query
-            if ($row->created_by == $row->modified_by) {
+            if ($row->creator == $row->modifier) {
                 $row->modifier = $row->creator;
             } else {
                 $query = 'SELECT name' .
                     ' FROM #__users' .
-                    ' WHERE id = '. (int) $row->modified_by;
+                    ' WHERE id = '. (int) $row->modifier;
                 $db->setQuery($query);
                 $row->modifier = $db->loadResult();
             }
@@ -199,15 +196,16 @@ class JobMgControllerGroup extends JController
         $javascript = "onchange=\"changeDynaList( 'catid', sectioncategories, document.adminForm.sectionid.options[document.adminForm.sectionid.selectedIndex].value, 0, 0);\"";
 
         // build the html select list for ordering
-        $query = 'SELECT ordering AS value, title AS text' .
-            ' FROM #__content' .
-            ' WHERE catid = ' . (int) $row->catid .
-            ' AND state >= 0' .
-            ' ORDER BY ordering';
-        if($edit)
-            $lists['ordering'] = JHTML::_('list.specificordering', $row, $id, $query, 1);
-        else
-            $lists['ordering'] = JHTML::_('list.specificordering', $row, '', $query, 1);
+//        $query = 'SELECT ordering AS value, title AS text' .
+//            ' FROM #__content' .
+//            ' WHERE catid = ' . (int) $row->catid .
+//            ' AND state >= 0' .
+//            ' ORDER BY ordering';
+//        
+//        if($edit)
+//            $lists['ordering'] = JHTML::_('list.specificordering', $row, $id, $query, 1);
+//        else
+//            $lists['ordering'] = JHTML::_('list.specificordering', $row, '', $query, 1);
 
         // build the html radio buttons for published
         $lists['status'] = JHTML::_('select.booleanlist', 'status', '', $row->status);
@@ -216,18 +214,17 @@ class JobMgControllerGroup extends JController
         $form = new JParameter('', JPATH_COMPONENT.DS.'models'.DS.'article.xml');
 
         // Details Group
-        $active = (intval($row->created_by) ? intval($row->created_by) : $user->get('id'));
+        $active = (intval($row->creator) ? intval($row->creator) : $user->get('id'));
         $form->set('created_by', $active);
 
 
         $form->set('created', JHTML::_('date', $row->created, '%Y-%m-%d %H:%M:%S'));
         // Advanced Group
-        $form->loadINI($row->attribs);
-
+//        $form->loadINI($row->attribs);
         // Metadata Group
-        $form->set('description', $row->metadesc);
-        $form->set('keywords', $row->metakey);
-        $form->loadINI($row->metadata);
+//        $form->set('description', $row->metadesc);
+//        $form->set('keywords', $row->metakey);
+//        $form->loadINI($row->metadata);
 
         //JobManagementView::form($row, $contentSection, $lists, $sectioncategories, $option, $form);
 

@@ -35,8 +35,8 @@
         var text = <?php echo $editor->getContent( 'content' ); ?>
         if (form.title.value == ""){
             alert( "<?php echo JText::_( 'Phải nhập vào tên công việc', true ); ?>" );
-        } else if (form.groupid.value == "-1"){
-            alert( "<?php echo JText::_( 'Phải chọn nhóm công việc', true ); ?>" );
+        //} else if (form.groupid.value == "-1"){
+        //    alert( "<?php echo JText::_( 'Phải chọn nhóm công việc', true ); ?>" );
         } else {
             <?php
             echo $editor->save( 'content' );
@@ -50,7 +50,7 @@
 JHTML::stylesheet("css/bootstrap.min.css","components/com_job_management/assets/");
 $controllerName = JRequest::getCmd( 'c', 'job' );
 ?>
-<form action="index.php" method="post" name="adminForm">
+<form action="index.php" method="post" name="adminForm" enctype="multipart/form-data" >
 
 
     <table cellspacing="0" cellpadding="0" border="0" width="100%">
@@ -81,6 +81,13 @@ $controllerName = JRequest::getCmd( 'c', 'job' );
                             <?php echo JHTMLJobMg::PublishSelelect($row->status,"status"); ?>
                         </div>
                     </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label><?php echo JText::_( 'File đính kèm (nếu có)' ); ?></label>
+                            <input class="form-control" type="file" name="file[]" multiple="multiple"  />
+                        </div>
+                    </div>
                     <div class="col-md-12">
                         <div class="form-group">
                             <label><?php echo JText::_( 'Select User' ); ?></label>
@@ -92,6 +99,7 @@ $controllerName = JRequest::getCmd( 'c', 'job' );
                             ?>
                         </div>
                     </div>
+
                     <div class="col-md-12">
                         <div class="form-group">
                             <label><?php echo JText::_( 'Content' ); ?></label>

@@ -1,6 +1,6 @@
 <h1>Thêm mới công việc</h1>
 <div class="">
-<form action="index.php" method="post" name="adminForm">
+<form action="index.php" method="post" name="adminForm" enctype="multipart/form-data"  >
 
     <div class="row p-3">
         <div class="col-md-12">
@@ -43,6 +43,12 @@
         </div>
         <div class="col-md-6">
             <?php echo JHTML::_('JobForm.level', "level",'Mức Độ',$this->job->level); ?>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="col-form-label "><?php echo JText::_( 'File đính kèm (nếu có)' ); ?></label>
+                <input class="form-control" type="file" name="file[]" multiple="multiple"  />
+            </div>
         </div>
         <div class="col-md-12">
             <div class="form-group">

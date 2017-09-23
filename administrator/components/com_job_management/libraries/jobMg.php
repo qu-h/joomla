@@ -73,8 +73,6 @@ class JHTMLJobMg extends  JHTML{
 
     }
 
-
-
     function AuthorSelect($inputname="filter_authorid",$selected_id=0){
         $query = 'SELECT u.id, u.name' .
             ' FROM #__users AS u' .
@@ -92,7 +90,56 @@ class JHTMLJobMg extends  JHTML{
         return JHTML::_('select.genericlist',  $authors, $inputname, 'class="inputbox" size="1" onchange="document.adminForm.submit( );"', 'id', 'name', $selected_id);
     }
 
-    function GroupSelect($job_object,$submit=false,$name=NULL){
+    function companySelect($company_object,$submit=false,$name=NULL, $fillter_items=false){
+        $groups[] = JHTML::_('select.option', '-1', JText::_( '-- Chọn Công ty --' ), 'id', 'title');
+
+        $query = 'SELECT c.id, c.name AS title' .
+            ' FROM #__jobmanagement_company AS c' .
+            ' WHERE c.status = 1';
+
+        if( !$fillter_items ){
+            $group_uids_assigned = self::UidMapGroupIds("company");
+            if( !empty($group_uids_assigned) ){
+                $query .= " AND c.id IN (".implode(",",$group_uids_assigned).")";
+            }
+        }
+
+        $selected_id = 0;
+        if( is_object($company_object) && get_class($company_object)=="JTableJobManagementJob" ){
+            $selected_id = $company_object->groupid;
+            $query .= " AND g.company = ".$company_object->companyid;
+        }elseif (is_numeric($company_object)) {
+            $selected_id = $company_object;
+        }
+
+        $query .= ' ORDER BY c.name';
+
+        $db	= & JFactory::getDBO();
+        $db->setQuery($query);
+        $groups = array_merge($groups, $db->loadObjectList());
+
+        if( is_null($name) ){
+            $name = "companyid";
+        }
+
+        $group_ids = array_map(function ($object) { return $object->id; }, $groups);
+        if( !in_array($selected_id,$group_ids) ){
+            $selected_id = -1;
+        }
+        JRequest::setVar( $name, $selected_id );
+
+        $javascript = null;
+        if( $submit ){
+            $javascript = $fillter_items ? ' onchange="document.adminForm.submit( );" ' : 'onchange="javascript: submitbutton(\'updateformval\');"';
+        }
+
+        return JHTML::_('select.genericlist',  $groups, $name, 'class="form-control custom-select" size="1" '.$javascript, 'id', 'title', intval($selected_id));
+
+    }
+    function GroupSelect($job_object,$submit=false,$name=NULL, $fillter_items=false){
+        global $mainframe;
+        $context    = 'com_job_management.viewcontent';
+
         $groups[] = JHTML::_('select.option', '-1', JText::_( '-- Chọn nhóm Công việc --' ), 'id', 'title');
 
         $query = 'SELECT g.id, g.title' .
@@ -100,16 +147,26 @@ class JHTMLJobMg extends  JHTML{
             ' WHERE g.status > 0';
 
         $selected_id = 0;
-        if( get_class($job_object)=="JTableJobManagementJob" ){
+        if( is_object($job_object) && get_class($job_object)=="JTableJobManagementJob" ){
             $selected_id = $job_object->groupid;
             $query .= " AND g.company = ".$job_object->companyid;
+        } elseif (is_numeric($job_object)) {
+            $selected_id = $job_object;
         }
         /*
          * update for list users in group
          */
-        $group_uids_assigned = self::UidMapGroupIds("group");
-        if( !empty($group_uids_assigned) ){
-            $query .= " AND g.id IN (".implode(",",$group_uids_assigned).")";
+        if( !$fillter_items ){
+            $group_uids_assigned = self::UidMapGroupIds("group");
+            if( !empty($group_uids_assigned) ){
+                $query .= " AND g.id IN (".implode(",",$group_uids_assigned).")";
+            }
+        }
+
+
+        $filter_companyid	= $mainframe->getUserStateFromRequest( $context.'companyid','filter_companyid',	0,	'int' );
+        if( $filter_companyid > 0 ){
+            $query .= " AND g.company = $filter_companyid";
         }
 
         $query .= ' ORDER BY g.title';
@@ -122,17 +179,17 @@ class JHTMLJobMg extends  JHTML{
             $name = "groupid";
         }
 
-
-
-
-
-
         $group_ids = array_map(function ($object) { return $object->id; }, $groups);
         if( !in_array($selected_id,$group_ids) ){
             $selected_id = -1;
         }
         JRequest::setVar( $name, $selected_id );
-        $javascript = $submit ? 'onchange="javascript: submitbutton(\'updateformval\');"' : NULL;
+
+        $javascript = null;
+        if( $submit ){
+            $javascript = $fillter_items ? ' onchange="document.adminForm.submit( );" ' : 'onchange="javascript: submitbutton(\'updateformval\');"';
+        }
+
         return JHTML::_('select.genericlist',  $groups, $name, 'class="form-control custom-select" size="1" '.$javascript, 'id', 'title', intval($selected_id));
     }
 
@@ -411,7 +468,6 @@ class JHTMLJobMg extends  JHTML{
                 $task = $alt = $action = $icon = null;
                 break;
         }
-
 
         if( strlen($action) < 1  ){
             return NULL;

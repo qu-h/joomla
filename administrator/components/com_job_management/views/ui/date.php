@@ -16,5 +16,5 @@ $onupdate = strlen($taskUpdate) > 0 ? 'onchange="javascript: submitbutton(\''.$t
         </div>
 
     </div>
-    <input type="hidden" id="dtp_input<?php echo $name; ?>" value=""  name="<?php echo $name; ?>"  />
+    <input type="hidden" id="dtp_input<?php echo $name; ?>" value="<?=$value_format ?>"  name="<?php echo $name; ?>"  />
 </div>

@@ -9,7 +9,7 @@
     </thead>
     <tbody>
     <?php if( isset($users) && !empty($users) ): foreach ($users AS $u):
-        $checked = in_array($u->uid,$selected) ? "checked" : NULL;
+        $checked = ( is_array($selected) && !empty($selected) && in_array($u->uid,$selected) )? "checked" : NULL;
         ?>
         <tr>
             <th class="text-center"><input name="<?php echo $name?>[]" value="<?php echo $u->uid?>" type="checkbox" <?php echo $checked; ?> ></th>

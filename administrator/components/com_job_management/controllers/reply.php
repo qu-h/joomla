@@ -130,7 +130,6 @@ class JobMgControllerReply extends JController
 
         $config =& JFactory::getConfig();
         $tzoffset = $config->getValue('config.offset');
-        //$date =& JFactory::getDate($row->created, $tzoffset);
         date_default_timezone_set('Asia/Ho_Chi_Minh');
         $row->created = date("Y-m-d H:i:s");
 
@@ -141,7 +140,6 @@ class JobMgControllerReply extends JController
             JError::raiseError( 500, $db->stderr() );
             return false;
         }
-
 
         $dispatcher 	= & JDispatcher::getInstance();
         $result = $dispatcher->trigger('onBeforeContentSave', array(&$row, $isNew));

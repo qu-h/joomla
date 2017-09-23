@@ -20,6 +20,8 @@ $add_allow = true;
         <?php if ( $add_allow ): ?>
             <div class="col-4">
                 <a class="btn btn-success text-white" href="<?php echo JRoute::_( 'index.php?option=com_job_management&task=add' ); ?>" >Thêm Công Việc</a>
+
+                <a class="btn btn-success text-white" href="<?php echo JRoute::_( 'index.php?option=com_job_management&view=jobs&status=-1' ); ?>" >Đã xóa</a>
             </div>
         <?php endif; ?>
         <div class="col-4">
